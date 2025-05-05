@@ -1,0 +1,27 @@
+<resources>
+<!--PANTALLA DE LOGIN-->
+<string name="app_name">InterLeague</string>
+<string name="etusuario">Nombre de usuario</string>
+<string name="etcontraseña">Contraseña</string>
+<string name="btniniciosesion">Iniciar sesión</string>
+<string name="btnolvidarcontraseña">¿Olvidaste tu contraseña?</string>
+
+<!-- PANTALLA RESTABLECER CONTRASEÑA-->
+<string name="titulo">RESTABLECER CONTRASEÑA</string>
+
+<!-- REESTABLECER CONTRASEÑA-->
+<string name="btnvolver">Volver</string>
+<string name="intrcorreo">Introduce el correo asociado</string>
+<string name="repcorreo">Repite el correo</string>
+<string name="texto">Revisa tu cuenta de correo, se enviará automáticamente una nueva contraseña para acceder</string>
+<string name="btnaceptar">Aceptar</string>
+
+<string name="menu_home">Inicio</string>
+<string name="menu_leagues">Ligas</string>
+<string name="menu_team">Mi Equipo</string>
+<string name="menu_market">Mercado</string>
+<string name="menu_settings">Ajustes</string>
+<string name="open_drawer">Abrir menú</string>
+<string name="close_drawer">Cerrar menú</string>
+
+</resources>

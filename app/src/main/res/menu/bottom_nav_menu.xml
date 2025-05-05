@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Inicio"
+        android:textColor="@color/grisoscuro" />
+
+    <item
+        android:id="@+id/nav_leagues"
+        android:icon="@drawable/balon"
+        android:title="Ligas"
+        android:textColor="@color/grisoscuro" />
+
+    <item
+        android:id="@+id/nav_my_team"
+        android:icon="@drawable/equipo"
+        android:title="Mi Equipo"
+        android:textColor="@color/grisoscuro" />
+
+    <item
+        android:id="@+id/nav_market"
+        android:icon="@drawable/mercado"
+        android:title="Mercado"
+        android:textColor="@color/grisoscuro" />
+
+</menu>

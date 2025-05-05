@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".EquipoActivity">
+
+    <!-- Contenedor principal de la pantalla -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <!-- Toolbar (barra superior con botón ☰) -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#78C649"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/menu_hamburguesa"
+            app:title="ADA Soccer Manager" />
+
+        <!-- Imagen de fondo del campo de fútbol -->
+        <ImageView
+            android:id="@+id/img_campo_futbol"
+            android:layout_width="353dp"
+            android:layout_height="537dp"
+            android:contentDescription="Campo de fútbol"
+            android:scaleType="centerCrop"
+            android:src="@drawable/campo_futbol"
+            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.631" />
+
+        <!-- Portero -->
+        <ImageButton
+            android:id="@+id/btn_portero"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@null"
+            android:contentDescription="Portero"
+            android:scaleType="fitCenter"
+            android:src="@drawable/thibaut_courtois"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/img_campo_futbol" />
+
+        <!-- Defensores -->
+        <ImageButton
+            android:id="@+id/btn_defensa1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Defensa 1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/dani_carvajal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_portero" />
+
+        <ImageButton
+            android:id="@+id/btn_defensa2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Defensa 2"
+            android:scaleType="fitCenter"
+            android:src="@drawable/antonio_rudiger"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.374"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_portero" />
+
+        <ImageButton
+            android:id="@+id/btn_defensa3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Defensa 3"
+            android:scaleType="fitCenter"
+            android:src="@drawable/eder_militao"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.625"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_portero" />
+
+        <ImageButton
+            android:id="@+id/btn_defensa4"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="44dp"
+            android:background="@null"
+            android:contentDescription="Defensa 4"
+            android:scaleType="fitCenter"
+            android:src="@drawable/fran_garcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_portero" />
+
+        <!-- Mediocampistas -->
+        <ImageButton
+            android:id="@+id/btn_mediocampista1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Mediocampista 1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/fede_valverde"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.232"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_defensa1" />
+
+        <ImageButton
+            android:id="@+id/btn_mediocampista2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Mediocampista 2"
+            android:scaleType="fitCenter"
+            android:src="@drawable/luka_modric"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_defensa2" />
+
+        <ImageButton
+            android:id="@+id/btn_mediocampista3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Mediocampista 3"
+            android:scaleType="fitCenter"
+            android:src="@drawable/jude_bellingham"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.779"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_defensa3" />
+
+        <!-- Delanteros -->
+        <ImageButton
+            android:id="@+id/btn_delantero1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Delantero 1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/rodrygo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.232"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_mediocampista1" />
+
+        <ImageButton
+            android:id="@+id/btn_delantero2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Delantero 2"
+            android:scaleType="fitCenter"
+            android:src="@drawable/kylian_mbappe"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_mediocampista2" />
+
+        <ImageButton
+            android:id="@+id/btn_delantero3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:background="@null"
+            android:contentDescription="Delantero 3"
+            android:scaleType="fitCenter"
+            android:src="@drawable/vinicius"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.779"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_mediocampista3" />
+
+        <!-- Barra de navegación inferior -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/windowBackground"
+            app:backgroundTint="#78C649"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:menu="@menu/bottom_nav_menu" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Menú lateral (NavigationView) -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:backgroundTint="#FCF5FD"
+        app:headerLayout="@layout/header_layout"
+        app:menu="@menu/drawer_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
