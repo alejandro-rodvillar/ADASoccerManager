@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "31476454861",
+    "project_id": "adasoccermanager",
+    "storage_bucket": "adasoccermanager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31476454861:android:8309ebecdecfd12be3e084",
+        "android_client_info": {
+          "package_name": "rodriguezvillar.alejandro.ADASoccerManager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE2kkxQiXZuW0TAlhHZ6CU-xPl-gKmGbQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
