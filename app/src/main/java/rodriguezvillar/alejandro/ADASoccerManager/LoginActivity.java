@@ -10,9 +10,20 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+
 public class LoginActivity extends AppCompatActivity {
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -60,12 +71,35 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Si ambos campos están llenos, procedemos al inicio de sesión
-                Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                // Buscar el usuario por nombre en Firestore
+                db.collection("usuarios")
+                        .whereEqualTo("nombre", nombreUsuario)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                // Usuario encontrado
+                                String correo = queryDocumentSnapshots.getDocuments().get(0).getString("email");
 
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);  // Cambia MainActivity por la siguiente ventana
-                startActivity(intent);
-                finish();
+                                // Iniciar sesión con correo y contraseña en Firebase Auth
+                                mAuth.signInWithEmailAndPassword(correo, pass)
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            } else {
+                                                Toast.makeText(LoginActivity.this, "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            } else {
+                                // No se encontró el nombre de usuario
+                                Toast.makeText(LoginActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(LoginActivity.this, "Error en la base de datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         });
     }
