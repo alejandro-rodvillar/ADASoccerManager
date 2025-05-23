@@ -156,6 +156,7 @@
             android:layout_marginBottom="98dp"
             android:backgroundTint="#77C549"
             android:text="Registrarse"
+            android:onClick="registrar"
             android:textColor="#3E4044"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/volvregis"
