@@ -21,7 +21,6 @@ public class LigasActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
 
-    // Datos ficticios de los equipos (usuario y puntos)
     String[] leagueTeams = {
             "1. JaviCruz - 58 Puntos",
             "2. Luisito87 - 54 Puntos",
@@ -120,7 +119,3 @@ public class LigasActivity extends AppCompatActivity {
         });
     }
 }
-
-
-
-

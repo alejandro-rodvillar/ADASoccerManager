@@ -10,70 +10,105 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class Registrarse extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
+    private EditText etEmail, etPassword, etNombre;
+    private FirebaseFirestore db;
+    private static final String TAG = "RegistroFirebase";
+    CheckBox checkBox;
+    Button btnRegistrarse;
+    Button btnVolver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registrarse);
 
-        EditText usuario = findViewById(R.id.nomregis);
-        EditText email = findViewById(R.id.correoregis);
-        EditText contrasena = findViewById(R.id.contraregis);
-        CheckBox checkBox = findViewById(R.id.checkBox);
-        Button btnRegistrarse = findViewById(R.id.btnregis);
-        Button btnVolver = findViewById(R.id.volvregis);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        etNombre = findViewById(R.id.nomregis);
+        etEmail = findViewById(R.id.correoregis);
+        etPassword = findViewById(R.id.contraregis);
+        checkBox = findViewById(R.id.checkBox);
+        btnRegistrarse = findViewById(R.id.btnregis);
+        btnVolver = findViewById(R.id.volvregis);
+    }
 
-        btnRegistrarse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nombreUsuario = usuario.getText().toString().trim();
-                String correo = email.getText().toString().trim();
-                String pass = contrasena.getText().toString().trim();
 
-                if (nombreUsuario.isEmpty()) {
-                    usuario.setError("Este campo es obligatorio");
-                    usuario.requestFocus();
-                    return;
-                }
+    public void registrar(View v) {
+        String nombreUsuario = etNombre.getText().toString().trim();
+        String correo = etEmail.getText().toString().trim();
+        String pass = etPassword.getText().toString().trim();
 
-                if (correo.isEmpty()) {
-                    email.setError("Este campo es obligatorio");
-                    email.requestFocus();
-                    return;
-                }
+        if (nombreUsuario.isEmpty()) {
+            etNombre.setError("Este campo es obligatorio");
+            etNombre.requestFocus();
+            return;
+        }
 
-                if (pass.isEmpty()) {
-                    contrasena.setError("Este campo es obligatorio");
-                    contrasena.requestFocus();
-                    return;
-                }
+        if (correo.isEmpty()) {
+            etEmail.setError("Este campo es obligatorio");
+            etEmail.requestFocus();
+            return;
+        }
 
-                if (!checkBox.isChecked()) {
-                    Toast.makeText(Registrarse.this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        if (pass.isEmpty()) {
+            etPassword.setError("Este campo es obligatorio");
+            etPassword.requestFocus();
+            return;
+        }
 
-                // Si todo está completo
-                Toast.makeText(Registrarse.this, "Registro completo", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(Registrarse.this, LoginActivity.class);  // Redirige a la pantalla de login
-                startActivity(intent);
-                finish();
-            }
-        });
+        if (!checkBox.isChecked()) {
+            Toast.makeText(Registrarse.this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        btnVolver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
+        mAuth.createUserWithEmailAndPassword(correo, pass)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            String uid = user.getUid();
+
+                            // Usar la clase Usuario
+                            Usuario usuario = new Usuario(nombreUsuario, correo);
+
+                            db.collection("usuarios").document(uid)
+                                    .set(usuario)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(Registrarse.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Error al guardar datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+
+                            // Redirige a Pagina1 después del registro
+                            Intent intent = new Intent(Registrarse.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish(); // Evita volver atrás al registro
+                        }
+
+                    } else {
+                        Toast.makeText(this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
         });
     }
 
-    @Override
+
+
+    /*@Override
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(Registrarse.this, LoginActivity.class);
         startActivity(intent);
         finish();
-    }
+    }*/
 }
