@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:backgroundTint="#FCF5FD">
 
-        <!-- Toolbar (barra superior con botón ☰) -->
+        <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -44,7 +44,6 @@
         <!-- Botones -->
 
         <!-- Bottom Navigation -->
-
         <Button
             android:id="@+id/btnCreateLeague"
             android:layout_width="234dp"
@@ -72,7 +71,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Menú lateral (NavigationView) -->
+    <!-- NavigationView (menú lateral) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"

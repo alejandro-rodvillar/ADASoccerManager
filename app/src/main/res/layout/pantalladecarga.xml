@@ -7,10 +7,8 @@
     android:background="@android:color/white"
     android:backgroundTint="#78C649">
 
-    <!-- TextView "Cargando..." -->
 
     <!-- ProgressBar -->
-
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -37,7 +35,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/logo_ada" />
-
-    <!-- ImageView (Pelota) -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

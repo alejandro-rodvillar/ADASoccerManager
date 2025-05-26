@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <!-- Toolbar (barra superior con botón ☰) -->
+        <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -53,7 +53,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/img_campo_futbol" />
 
-        <!-- Defensores -->
+        <!-- Defensas -->
         <ImageButton
             android:id="@+id/btn_defensa1"
             android:layout_width="80dp"
@@ -108,7 +108,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_portero" />
 
-        <!-- Mediocampistas -->
+        <!-- Mediocentros -->
         <ImageButton
             android:id="@+id/btn_mediocampista1"
             android:layout_width="80dp"
@@ -208,7 +208,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Menú lateral (NavigationView) -->
+    <!-- NavigationView (menú lateral) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"

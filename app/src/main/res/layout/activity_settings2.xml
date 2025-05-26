@@ -18,5 +18,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Aquí puedes añadir más elementos como botones, opciones, etc. -->
 </androidx.constraintlayout.widget.ConstraintLayout>
