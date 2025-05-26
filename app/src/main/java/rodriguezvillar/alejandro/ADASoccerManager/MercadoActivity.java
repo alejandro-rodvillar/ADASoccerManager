@@ -24,20 +24,20 @@ public class MercadoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mercado);
 
-        // Configurar Toolbar
+        // Se configura el Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Configurar DrawerLayout y NavigationView
+        // Se configura el DrawerLayout y NavigationView
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
 
-        // Configurar ActionBarDrawerToggle
+        // Se configura ActionBarDrawerToggle
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Manejar clics en el menú lateral
+        // Controles de los clics en el menú lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -48,10 +48,10 @@ public class MercadoActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(MercadoActivity.this, SettingsActivity.class));
                 } else if (id == R.id.nav_logout) {
-                    // Aquí se inicia la actividad Login cuando se cierra sesión
+                    // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
                     Intent intent = new Intent(MercadoActivity.this, LoginActivity.class);
                     startActivity(intent);
-                    //finish(); // Cierra esta actividad para que el usuario no pueda regresar
+                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
 
                 drawerLayout.closeDrawers();
@@ -59,11 +59,10 @@ public class MercadoActivity extends AppCompatActivity {
             }
         });
 
-        // Configurar BottomNavigationView
+        // Configuración del BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        // Aquí cambiamos a resaltar el ítem correcto para la actividad del mercado
-        bottomNavigationView.setSelectedItemId(R.id.nav_market); // Resaltar el botón "Mercado"
+        bottomNavigationView.setSelectedItemId(R.id.nav_market); // Se resalta el botón "Mercado"
 
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -84,7 +83,6 @@ public class MercadoActivity extends AppCompatActivity {
                     Toast.makeText(MercadoActivity.this, "Ya estás en Mercado", Toast.LENGTH_SHORT).show();
                     return true;
                 }
-
                 return false;
             }
         });

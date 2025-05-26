@@ -18,7 +18,7 @@ public class ReestablecerContrasena extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Redirigir a la pantalla de login
+                // Se redirige a la pantalla de login
                 Intent intent = new Intent(ReestablecerContrasena.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

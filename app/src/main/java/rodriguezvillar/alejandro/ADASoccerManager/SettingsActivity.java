@@ -51,7 +51,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        // Manejar clics en el menú lateral
+        // Controles de los clics en el menú lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -62,17 +62,14 @@ public class SettingsActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_settings) {
                     Toast.makeText(SettingsActivity.this, "Ya estás en Configuración", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.nav_logout) {
-                    // Aquí se inicia la actividad Login cuando se cierra sesión
+                    // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
                     Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
                     startActivity(intent);
-                    //finish(); // Cierra esta actividad para que el usuario no pueda regresar
+                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
-
-
                 drawerLayout.closeDrawers();
                 return true;
             }
         });
     }
 }
-

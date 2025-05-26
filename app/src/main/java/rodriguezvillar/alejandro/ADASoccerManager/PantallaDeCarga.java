@@ -20,7 +20,7 @@ public class PantallaDeCarga extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progressBar);
 
-        // Simular la carga durante 4 segundos
+        // Simulación de la carga durante 4 segundos
         new Thread(new Runnable() {
             public void run() {
                 while (progressStatus < 100) {
@@ -31,13 +31,13 @@ public class PantallaDeCarga extends AppCompatActivity {
                         }
                     });
                     try {
-                        // Dormir el hilo para simular la carga
-                        Thread.sleep(40); // 4000ms / 100 = 40ms por incremento
+                        // Parada del hilo para simular la carga
+                        Thread.sleep(40);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                // Cuando la carga termine, redirigir a la siguiente actividad
+                // Al terminar la carga, se redirige a la siguiente actividad
                 Intent intent = new Intent(PantallaDeCarga.this, PantallaDeEspera.class);
                 startActivity(intent);
                 finish();
@@ -47,5 +47,6 @@ public class PantallaDeCarga extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
     }
 }

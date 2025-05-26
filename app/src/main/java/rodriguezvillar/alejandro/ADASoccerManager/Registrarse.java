@@ -39,7 +39,6 @@ public class Registrarse extends AppCompatActivity {
         btnVolver = findViewById(R.id.volvregis);
     }
 
-
     public void registrar(View v) {
         String nombreUsuario = etNombre.getText().toString().trim();
         String correo = etEmail.getText().toString().trim();
@@ -50,24 +49,20 @@ public class Registrarse extends AppCompatActivity {
             etNombre.requestFocus();
             return;
         }
-
         if (correo.isEmpty()) {
             etEmail.setError("Este campo es obligatorio");
             etEmail.requestFocus();
             return;
         }
-
         if (pass.isEmpty()) {
             etPassword.setError("Este campo es obligatorio");
             etPassword.requestFocus();
             return;
         }
-
         if (!checkBox.isChecked()) {
             Toast.makeText(Registrarse.this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
             return;
         }
-
         mAuth.createUserWithEmailAndPassword(correo, pass)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -75,7 +70,7 @@ public class Registrarse extends AppCompatActivity {
                         if (user != null) {
                             String uid = user.getUid();
 
-                            // Usar la clase Usuario
+                            // Se utiliza la clase Usuario
                             Usuario usuario = new Usuario(nombreUsuario, correo);
 
                             db.collection("usuarios").document(uid)
@@ -90,19 +85,16 @@ public class Registrarse extends AppCompatActivity {
                                         Toast.makeText(this, "Error al guardar datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     });
 
-                            // Redirige a Pagina1 después del registro
+                            // Se redirige a la primera página después del registro
                             Intent intent = new Intent(Registrarse.this, LoginActivity.class);
                             startActivity(intent);
-                            finish(); // Evita volver atrás al registro
+                            finish();
                         }
-
                     } else {
                         Toast.makeText(this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
         });
     }
-
-
 
     /*@Override
     public void onBackPressed() {

@@ -4,7 +4,6 @@ public class Usuario {
     private String nombre;
     private String email;
 
-    // Constructor vacío requerido por Firestore
     public Usuario() {}
 
     public Usuario(String nombre, String email) {
@@ -12,7 +11,6 @@ public class Usuario {
         this.email = email;
     }
 
-    // Getters y setters (recomendado aunque no siempre obligatorio)
     public String getNombre() {
         return nombre;
     }
@@ -28,5 +26,4 @@ public class Usuario {
     public void setEmail(String email) {
         this.email =email;
     }
-
 }

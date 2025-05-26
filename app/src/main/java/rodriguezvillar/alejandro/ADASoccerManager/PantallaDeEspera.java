@@ -18,7 +18,7 @@ public class PantallaDeEspera extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Redirigir a la pantalla de login
+                // Se redirige a la pantalla de login
                 Intent intent = new Intent(PantallaDeEspera.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -28,5 +28,6 @@ public class PantallaDeEspera extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
     }
 }

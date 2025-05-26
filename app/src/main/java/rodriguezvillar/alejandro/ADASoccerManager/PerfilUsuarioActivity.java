@@ -30,10 +30,9 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        // Desmarcar cualquier ítem cuando se entra en la actividad.
-        //bottomNavigationView.setSelectedItemId(-1);  // Ningún ítem seleccionado al entrar
+        //bottomNavigationView.setSelectedItemId(-1);
 
-        // Establecer el listener de los ítems de navegación
+        // Se establece el listener de los ítems de navegación
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -56,7 +55,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             }
         });
 
-        // Manejar clics en el menú lateral
+        // Controles de los clics en el menú lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -67,12 +66,11 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(PerfilUsuarioActivity.this, SettingsActivity.class));
                 } else if (id == R.id.nav_logout) {
-                    // Aquí se inicia la actividad Login cuando se cierra sesión
+                    // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
                     Intent intent = new Intent(PerfilUsuarioActivity.this, LoginActivity.class);
                     startActivity(intent);
-                    //finish(); // Cierra esta actividad para que el usuario no pueda regresar
+                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
-
                 drawerLayout.closeDrawers();
                 return true;
             }
