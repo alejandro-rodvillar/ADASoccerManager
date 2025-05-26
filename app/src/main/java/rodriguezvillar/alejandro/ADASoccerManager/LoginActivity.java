@@ -28,12 +28,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Referencias a los campos de texto
-        EditText usuario = findViewById(R.id.usuario);  // Asegúrate que este ID es correcto
-        EditText contrasena = findViewById(R.id.etcontraseña);    // Asegúrate que este ID es correcto
+        // Se referencian los campos de texto
+        EditText usuario = findViewById(R.id.usuario);
+        EditText contrasena = findViewById(R.id.etContrasena);
 
         Button btnRegistro = findViewById(R.id.btnregistro);
-        Button btnIniciarSesion = findViewById(R.id.btnLogin);  // Asegúrate que este ID es correcto
+        Button btnIniciarSesion = findViewById(R.id.btnLogin);
 
         btnRegistro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,16 +72,16 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Buscar el usuario por nombre en Firestore
+                // Se busca el usuario por nombre en Firestore
                 db.collection("usuarios")
                         .whereEqualTo("nombre", nombreUsuario)
                         .get()
                         .addOnSuccessListener(queryDocumentSnapshots -> {
                             if (!queryDocumentSnapshots.isEmpty()) {
-                                // Usuario encontrado
+                                // Si se encuentra el ususario:
                                 String correo = queryDocumentSnapshots.getDocuments().get(0).getString("email");
 
-                                // Iniciar sesión con correo y contraseña en Firebase Auth
+                                // Se inicia sesión con correo y contraseña en Firebase Auth
                                 mAuth.signInWithEmailAndPassword(correo, pass)
                                         .addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                                             }
                                         });
                             } else {
-                                // No se encontró el nombre de usuario
+                                // Si no se encuentra el nombre de usuario:
                                 Toast.makeText(LoginActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // No permitir ir atrás desde la pantalla de login
+        // No se permite ir atrás desde la pantalla de login
         super.onBackPressed();
     }
 }

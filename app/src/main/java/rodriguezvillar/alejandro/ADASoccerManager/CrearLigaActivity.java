@@ -23,9 +23,9 @@ public class CrearLigaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crear_liga); // Carga el layout de la actividad
+        setContentView(R.layout.activity_crear_liga); // Se carga el layout de la actividad
 
-        // Referencia a los campos de entrada
+        // Se referencia a los campos de entrada
         EditText etLeagueName = findViewById(R.id.etLeagueName);
         EditText etParticipants = findViewById(R.id.etParticipants);
 
@@ -33,11 +33,11 @@ public class CrearLigaActivity extends AppCompatActivity {
         findViewById(R.id.btnSubmit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Obtener los valores de los campos de entrada
+                // Se obtienen los valores de los campos de entrada
                 String leagueName = etLeagueName.getText().toString().trim();
                 String participants = etParticipants.getText().toString().trim();
 
-                // Validar los campos
+                // Se validan los campos
                 if (leagueName.isEmpty()) {
                     etLeagueName.setError("Ingresa el nombre de la liga");
                     etLeagueName.requestFocus();
@@ -50,31 +50,30 @@ public class CrearLigaActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Si ambos campos están llenos, proceder a crear la liga
+                // Si ambos campos están llenos, se crea la liga
                 Toast.makeText(CrearLigaActivity.this, "Liga " + leagueName + " creada", Toast.LENGTH_SHORT).show();
 
-                // Limpiar los campos después de crear la liga
+                // Al crear la liga se limpian los campos
                 etLeagueName.setText("");
                 etParticipants.setText("");
             }
         });
 
-        // Configurar Toolbar y el botón de menú (☰)
+        // Toolbar y el botón de menú
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Configurar el DrawerLayout para el menú lateral
+        // Se configura el DrawerLayout para el menú lateral
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        // Configurar el botón de menú lateral (hamburguesa)
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
+        // Se configura el botón de menú lateral (las tres rayas)
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Manejar clics en el menú lateral
+        // Controles de los clics en el menú lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -85,24 +84,24 @@ public class CrearLigaActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(CrearLigaActivity.this, SettingsActivity.class));
                 } else if (id == R.id.nav_logout) {
-                    // Inicia la actividad Login al cerrar sesión
+                    // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
                     startActivity(new Intent(CrearLigaActivity.this, LoginActivity.class));
-                    finish(); // Cierra la actividad actual para que el usuario no pueda regresar
+                    finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
 
-                drawerLayout.closeDrawers(); // Cierra el menú después de seleccionar una opción
+                drawerLayout.closeDrawers(); // Siempre se cierra el menú después de seleccionar una opción
                 return true;
             }
         });
 
-        // Configurar navegación en BottomNavigationView
+        // Configuración de la navegación en BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
 
                 if (id == R.id.nav_home) {
-                    // Ya estás en la pantalla de inicio
+                    // Pantalla de inicio
                     startActivity(new Intent(CrearLigaActivity.this, MainActivity.class));
                     return true;
                 } else if (id == R.id.nav_leagues) {
@@ -115,7 +114,6 @@ public class CrearLigaActivity extends AppCompatActivity {
                     startActivity(new Intent(CrearLigaActivity.this, MercadoActivity.class));
                     return true;
                 }
-
                 return false;
             }
         });

@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Asegúrate de que esta es la actividad principal
+        setContentView(R.layout.activity_main);
 
         // Botón para crear una nueva liga
         findViewById(R.id.btnCreateLeague).setOnClickListener(new View.OnClickListener() {
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Configurar Toolbar y botón de menú
+        // Se configura el Toolbar y botón de menú
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -41,13 +41,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.navigationView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        // Configurar botón de menú (☰)
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
+        // Se configura el botón de menú (las tres rayas)
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Manejar clics en el menú lateral
+        // Controles de los clics en el menú lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -61,24 +60,23 @@ public class MainActivity extends AppCompatActivity {
                     // Aquí se inicia la actividad Login cuando se cierra sesión
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
-                    //finish(); // Cierra esta actividad para que el usuario no pueda regresar
+                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
-
                 drawerLayout.closeDrawers();
                 return true;
             }
         });
 
-        // Configurar navegación en BottomNavigationView
+        // Configuración de navegación en BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
 
                 if (id == R.id.nav_home) {
-                    // Mostrar un Toast si ya estás en la pantalla de inicio
+                    // Se muestra un Toast si ya estás en la pantalla de inicio
                     Toast.makeText(MainActivity.this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show();
-                    return true; // Indica que el item fue manejado
+                    return true;
                 } else if (id == R.id.nav_leagues) {
                     startActivity(new Intent(MainActivity.this, LigasActivity.class));
                     return true;
@@ -89,8 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, MercadoActivity.class));
                     return true;
                 }
-
-                return false; // Indica que el item no fue manejado
+                return false;
             }
         });
     }

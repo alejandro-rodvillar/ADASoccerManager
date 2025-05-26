@@ -24,20 +24,20 @@ public class EquipoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_equipo);
 
-        // Configurar Toolbar
+        // Se configura el Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Configurar DrawerLayout y NavigationView
-        drawerLayout = findViewById(R.id.drawerLayout); // Asegúrate de que el ID coincida
+        // Se configura el DrawerLayout y NavigationView
+        drawerLayout = findViewById(R.id.drawerLayout); // El ID tiene que coincidir
         NavigationView navigationView = findViewById(R.id.navigationView);
 
-        // Configurar ActionBarDrawerToggle
+        // Se configura el ActionBarDrawerToggle
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Manejar clics en el menú lateral
+        // Controles de los clics en el menú lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -59,9 +59,9 @@ public class EquipoActivity extends AppCompatActivity {
             }
         });
 
-        // Configurar BottomNavigationView
+        // Configuración de la navegación en BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_my_team); // Resaltar el botón "Mi Equipo"
+        bottomNavigationView.setSelectedItemId(R.id.nav_my_team); // El botón "Mi Equipo" resalta
 
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -81,7 +81,6 @@ public class EquipoActivity extends AppCompatActivity {
                     startActivity(new Intent(EquipoActivity.this, MercadoActivity.class));
                     return true;
                 }
-
                 return false;
             }
         });
@@ -90,6 +89,6 @@ public class EquipoActivity extends AppCompatActivity {
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        toggle.syncState(); // Sincronizar el estado del toggle
+        toggle.syncState(); // Se sincroniza el estado del toggle
     }
 }
