@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "31476454861",
+    "firebase_url": "https://adasoccermanager-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "adasoccermanager",
     "storage_bucket": "adasoccermanager.firebasestorage.app"
   },

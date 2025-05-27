@@ -2,6 +2,7 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -14,15 +15,63 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
+    private DatabaseReference mDatabase;
+    private static final String TAG = "FirebaseData";
 
+    private void mostrarTodosLosDatos() {
+        mDatabase.child("jugadores").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "========== TODOS LOS JUGADORES ==========");
+
+                for (DataSnapshot jugadorSnapshot : dataSnapshot.getChildren()) {
+                    String key = jugadorSnapshot.getKey();
+
+                    String nombre = jugadorSnapshot.child("nombre").getValue(String.class);
+                    String posicion = jugadorSnapshot.child("posicion").getValue(String.class);
+                    String equipo = jugadorSnapshot.child("equipo").getValue(String.class);
+                    Long precio = jugadorSnapshot.child("precio").getValue(Long.class);
+                    Long puntos = jugadorSnapshot.child("puntos").getValue(Long.class);
+                    String estado = jugadorSnapshot.child("estado").getValue(String.class);
+
+                    Log.d(TAG, "ID: " + key);
+                    Log.d(TAG, "Nombre: " + nombre);
+                    Log.d(TAG, "Posición: " + posicion);
+                    Log.d(TAG, "Equipo: " + equipo);
+                    Log.d(TAG, "Precio: " + precio);
+                    Log.d(TAG, "Puntos: " + puntos);
+                    Log.d(TAG, "Estado: " + estado);
+                    Log.d(TAG, "----------------------------------------");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Error al leer datos: " + databaseError.getMessage());
+            }
+        });
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.black));
+        }
+
+
+        Log.d("HOLA", "hola");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mostrarTodosLosDatos();
 
         // Botón para crear una nueva liga
         findViewById(R.id.btnCreateLeague).setOnClickListener(new View.OnClickListener() {
