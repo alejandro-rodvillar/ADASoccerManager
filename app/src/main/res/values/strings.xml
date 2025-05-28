@@ -1,6 +1,6 @@
 <resources>
 <!--PANTALLA DE LOGIN-->
-<string name="app_name">InterLeague</string>
+<string name="app_name">ADA Soccer League</string>
 <string name="etusuario">Nombre de usuario</string>
 <string name="etcontraseña">Contraseña</string>
 <string name="btniniciosesion">Iniciar sesión</string>

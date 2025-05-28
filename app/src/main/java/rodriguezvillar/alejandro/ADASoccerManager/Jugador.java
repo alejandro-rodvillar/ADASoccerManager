@@ -4,14 +4,16 @@ public class Jugador {
     private String nombre;
     private String equipo;
     private String posicion;
-    private double precio;
+    private int precio;
     private int puntos;
+    private String estado;
 
     public Jugador() {} // Requerido por Firestore
 
     public String getNombre() { return nombre; }
     public String getEquipo() { return equipo; }
     public String getPosicion() { return posicion; }
-    public double getPrecio() { return precio; }
+    public int getPrecio() { return precio; }
     public int getPuntos() { return puntos; }
+    public String getEstado() { return estado; }
 }

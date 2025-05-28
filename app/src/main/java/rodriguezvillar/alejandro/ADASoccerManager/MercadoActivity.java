@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -49,10 +50,8 @@ public class MercadoActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(MercadoActivity.this, SettingsActivity.class));
                 } else if (id == R.id.nav_logout) {
-                    // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
                     Intent intent = new Intent(MercadoActivity.this, LoginActivity.class);
                     startActivity(intent);
-                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
 
                 drawerLayout.closeDrawers();
@@ -63,53 +62,42 @@ public class MercadoActivity extends AppCompatActivity {
         // Configuración del BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        bottomNavigationView.setSelectedItemId(R.id.nav_market); // Se resalta el botón "Mercado"
+        bottomNavigationView.setSelectedItemId(R.id.nav_market);
 
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
 
-                if (id == R.id.nav_home) {
-                    startActivity(new Intent(MercadoActivity.this, MainActivity.class));
-                    return true;
-                } else if (id == R.id.nav_leagues) {
-                    startActivity(new Intent(MercadoActivity.this, LigasActivity.class));
-                    return true;
-                } else if (id == R.id.nav_my_team) {
-                    startActivity(new Intent(MercadoActivity.this, EquipoActivity.class));
-                    return true;
-                } else if (id == R.id.nav_market) {
-                    // Muestra un Toast si ya estás en la pantalla del mercado
-                    Toast.makeText(MercadoActivity.this, "Ya estás en Mercado", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(MercadoActivity.this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_leagues) {
+                startActivity(new Intent(MercadoActivity.this, LigasActivity.class));
+                return true;
+            } else if (id == R.id.nav_my_team) {
+                startActivity(new Intent(MercadoActivity.this, EquipoActivity.class));
+                return true;
+            } else if (id == R.id.nav_market) {
+                Toast.makeText(MercadoActivity.this, "Ya estás en Mercado", Toast.LENGTH_SHORT).show();
+                return true;
             }
+            return false;
         });
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) searchItem.getActionView();
-
-        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(MercadoActivity.this, "Buscando: " + query, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // Aquí puedes implementar búsqueda en tiempo real
-                return false;
-            }
-        });
-
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            // Lanzar la nueva actividad que muestra la lista de jugadores Firebase
+            Intent intent = new Intent(this, ListaJugadoresFirebaseActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
