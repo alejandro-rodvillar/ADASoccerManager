@@ -15,6 +15,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
 
     private List<Jugador> listaJugadores;
 
+
     public JugadorAdapter(List<Jugador> listaJugadores) {
         this.listaJugadores = listaJugadores;
     }
