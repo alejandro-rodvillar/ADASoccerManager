@@ -86,9 +86,20 @@ public class Registrarse extends AppCompatActivity {
                                     });
 
                             // Se redirige a la primera página después del registro
-                            Intent intent = new Intent(Registrarse.this, LoginActivity.class);
-                            startActivity(intent);
-                            finish();
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(verificationTask -> {
+                                        if (verificationTask.isSuccessful()) {
+                                            Toast.makeText(this, "Se ha enviado un correo de verificación. Revisa tu bandeja de entrada.", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(this, "No se pudo enviar el correo de verificación.", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        // Después de enviar el correo, redirige al login
+                                        Intent intent = new Intent(Registrarse.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    });
+
                         }
                     } else {
                         Toast.makeText(this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
