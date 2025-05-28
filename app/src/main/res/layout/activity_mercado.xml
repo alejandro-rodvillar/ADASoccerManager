@@ -18,11 +18,11 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#78C649"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="ADA Soccer Manager" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:title="ADA Soccer Manager">
+        </androidx.appcompat.widget.Toolbar>
 
         <!-- Lista de jugadores -->
         <LinearLayout
@@ -329,7 +329,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-
         </LinearLayout>
 
         <!-- Bottom Navigation -->
@@ -353,5 +352,7 @@
         android:layout_gravity="start"
         app:menu="@menu/drawer_menu"
         app:headerLayout="@layout/header_layout"/>
+
+
 
 </androidx.drawerlayout.widget.DrawerLayout>
