@@ -106,6 +106,8 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    // Evitar NullPointerException comprobando nombre != null antes
+                    listaJugadores.removeIf(j -> j.getNombre() == null);
                     Collections.sort(listaJugadores, Comparator.comparing(j -> j.getNombre().toLowerCase()));
                 }
 
@@ -131,9 +133,11 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
             listaFiltrada.addAll(listaJugadores);
         } else {
             for (Jugador j : listaJugadores) {
+                String nombre = j.getNombre() != null ? j.getNombre().toLowerCase() : "";
+                String equipo = j.getEquipo() != null ? j.getEquipo().toLowerCase() : "";
+
                 // Filtrar por nombre del jugador o nombre del equipo
-                if (j.getNombre().toLowerCase().contains(texto) ||
-                        j.getEquipo().toLowerCase().contains(texto)) {
+                if (nombre.contains(texto) || equipo.contains(texto)) {
                     listaFiltrada.add(j);
                 }
             }
@@ -142,7 +146,6 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
 
         actualizarVistaSinResultados();
     }
-
 
     private void actualizarVistaSinResultados() {
         if (listaFiltrada.isEmpty()) {

@@ -16,4 +16,6 @@ public class Jugador {
     public int getPrecio() { return precio; }
     public int getPuntos() { return puntos; }
     public String getEstado() { return estado; }
+
+    public void setEstado(String estado) { this.estado = estado; }
 }

@@ -9,7 +9,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -108,12 +107,24 @@ public class MercadoActivity extends AppCompatActivity {
                 listaJugadores.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
-                    if (jugador != null) {
+                    if (jugador != null && jugador.getNombre() != null) {
                         listaJugadores.add(jugador);
                     }
                 }
-                Collections.sort(listaJugadores, (j1, j2) ->
+
+                // Filtrar y ordenar sólo jugadores con nombre no nulo
+                List<Jugador> jugadoresValidos = new ArrayList<>();
+                for (Jugador j : listaJugadores) {
+                    if (j.getNombre() != null) {
+                        jugadoresValidos.add(j);
+                    }
+                }
+                Collections.sort(jugadoresValidos, (j1, j2) ->
                         j1.getNombre().toLowerCase().compareTo(j2.getNombre().toLowerCase()));
+
+                listaJugadores.clear();
+                listaJugadores.addAll(jugadoresValidos);
+
                 elegirJugadoresAleatorios();
             }
 
