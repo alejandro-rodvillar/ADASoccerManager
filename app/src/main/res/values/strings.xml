@@ -1,7 +1,7 @@
 <resources>
 <!--PANTALLA DE LOGIN-->
 <string name="app_name">ADA Soccer League</string>
-<string name="etusuario">Nombre de usuario</string>
+<string name="etusuario">Usuario o dirección de correo</string>
 <string name="etcontraseña">Contraseña</string>
 <string name="btniniciosesion">Iniciar sesión</string>
 <string name="btnolvidarcontraseña">¿Olvidaste tu contraseña?</string>

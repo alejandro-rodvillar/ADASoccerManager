@@ -28,7 +28,8 @@
             android:hint="@string/etusuario"
             android:inputType="text"
             android:textColor="#3E4044"
-            android:textColorHint="#3E4044" />
+            android:textColorHint="#3E4044"
+            tools:text="Usuario o dirección de correo" />
 
         <!-- Campo de texto para la contraseña -->
         <EditText
