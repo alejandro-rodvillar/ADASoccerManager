@@ -2,57 +2,72 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="12dp"
-    android:background="?attr/selectableItemBackground"> <!-- para efecto click -->
+    android:background="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/tvNombre"
-        android:layout_width="wrap_content"
+    <!-- Info del jugador a la izquierda -->
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nombre"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="#2E7D32"
-        android:paddingBottom="4dp"/>
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvEquipo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Equipo"
-        android:textSize="14sp"
-        android:paddingBottom="2dp"/>
+        <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#2E7D32"
+            android:paddingBottom="4dp" />
 
-    <TextView
-        android:id="@+id/tvPosicion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Posición"
-        android:textSize="14sp"
-        android:paddingBottom="2dp"/>
+        <TextView
+            android:id="@+id/tvEquipo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Equipo"
+            android:textSize="14sp"
+            android:paddingBottom="2dp" />
 
-    <TextView
-        android:id="@+id/tvPrecio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Precio"
-        android:textSize="14sp"
-        android:paddingBottom="2dp"/>
+        <TextView
+            android:id="@+id/tvPosicion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posición"
+            android:textSize="14sp"
+            android:paddingBottom="2dp" />
 
-    <TextView
-        android:id="@+id/tvPuntos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Puntos"
-        android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tvPrecio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precio"
+            android:textSize="14sp"
+            android:paddingBottom="2dp" />
 
-    <TextView
-        android:id="@+id/tvEstadoJugador"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Estado"
-        android:textSize="14sp"
-        android:textColor="#888888" />
+        <TextView
+            android:id="@+id/tvPuntos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Puntos"
+            android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/tvEstadoJugador"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Estado"
+            android:textSize="14sp"
+            android:textColor="#888888" />
+    </LinearLayout>
+
+    <!-- Camiseta del equipo a la derecha -->
+    <ImageView
+        android:id="@+id/imgCamiseta"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="Camiseta del equipo" />
 </LinearLayout>
