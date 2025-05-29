@@ -131,7 +131,9 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
             listaFiltrada.addAll(listaJugadores);
         } else {
             for (Jugador j : listaJugadores) {
-                if (j.getNombre().toLowerCase().contains(texto)) {
+                // Filtrar por nombre del jugador o nombre del equipo
+                if (j.getNombre().toLowerCase().contains(texto) ||
+                        j.getEquipo().toLowerCase().contains(texto)) {
                     listaFiltrada.add(j);
                 }
             }
@@ -140,6 +142,7 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
 
         actualizarVistaSinResultados();
     }
+
 
     private void actualizarVistaSinResultados() {
         if (listaFiltrada.isEmpty()) {
