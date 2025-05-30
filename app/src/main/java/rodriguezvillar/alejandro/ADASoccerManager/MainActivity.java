@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -106,11 +108,22 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_settings) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 } else if (id == R.id.nav_logout) {
-                    // Aquí se inicia la actividad Login cuando se cierra sesión
+                    // Borrar preferencias de login
+                    SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.clear(); // Elimina los datos de login persistente
+                    editor.apply();
+
+                    // Cerrar sesión de Firebase
+                    FirebaseAuth.getInstance().signOut();
+
+                    // Redirigir a Login y cerrar la actividad actual
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
+                    finish();
                 }
+
                 drawerLayout.closeDrawers();
                 return true;
             }

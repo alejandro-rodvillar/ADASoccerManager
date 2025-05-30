@@ -29,6 +29,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Si ya hay sesión iniciada y no han pasado 5 días, ir a MainActivity
+        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        long lastLoginTime = prefs.getLong("last_login_time", 0);
+        long fiveDaysMillis = 5 * 24 * 60 * 60 * 1000L;
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null && System.currentTimeMillis() - lastLoginTime <= fiveDaysMillis) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+            return;
+        }
+
         etIdentificador = findViewById(R.id.usuario); // Puede ser correo o nombre de usuario
         etPassword = findViewById(R.id.etContrasena);
         Button btnLogin = findViewById(R.id.btnLogin);
@@ -90,6 +102,12 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null && user.isEmailVerified()) {
                             Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                            // Guardar timestamp del login
+                            SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putLong("last_login_time", System.currentTimeMillis());
+                            editor.apply();
+
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
