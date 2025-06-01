@@ -134,7 +134,7 @@ public class CrearLigaActivity extends AppCompatActivity {
 
         String uid = currentUser.getUid();
 
-        // Comprobamos si el usuario ya tiene una liga
+        // comprobamos si el usuario ya tiene una liga
         databaseRef.child("usuarios").child(uid).child("ligaId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
