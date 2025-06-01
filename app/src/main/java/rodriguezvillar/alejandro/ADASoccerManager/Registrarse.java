@@ -1,11 +1,14 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
+
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import android.graphics.Paint;
+import android.widget.TextView;
 
 public class Registrarse extends AppCompatActivity {
 
@@ -37,6 +42,23 @@ public class Registrarse extends AppCompatActivity {
         checkBox = findViewById(R.id.checkBox);
         btnRegistrarse = findViewById(R.id.btnregis);
         btnVolver = findViewById(R.id.volvregis);
+        TextView textTerminos = findViewById(R.id.textTerminos);
+
+        textTerminos.setPaintFlags(textTerminos.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+        textTerminos.setOnClickListener(v -> {
+            Intent intent = new Intent(Registrarse.this, TerminosCondicionesActivity.class);
+            startActivity(intent);
+        });
+
+        btnVolver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Registrarse.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     public void registrar(View v) {
