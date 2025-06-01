@@ -1,9 +1,12 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -31,13 +35,21 @@ public class MercadoActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
-
     private RecyclerView recyclerViewMercado;
     private JugadorAdapter adapter;
     private List<Jugador> listaJugadores = new ArrayList<>();
     private List<Jugador> listaAleatoria = new ArrayList<>();
-
     private DatabaseReference dbRef;
+    private TextView textViewTiempoRestante;
+
+    private Handler handler = new Handler();
+    private Runnable updateTimerRunnable;
+
+    // SharedPreferences
+    private static final String PREFS_NAME = "MercadoPrefs";
+    private static final String KEY_JUGADORES = "JugadoresMercado";
+    private static final String KEY_TIMESTAMP = "UltimaActualizacion";
+    private static final long TIEMPO_ESPERA_MS = 24 * 60 * 60 * 1000; // 24 horas
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +101,26 @@ public class MercadoActivity extends AppCompatActivity {
             return false;
         });
 
-        // CONFIGURAR RECYCLERVIEW
+        // VIEWS
         recyclerViewMercado = findViewById(R.id.recyclerViewMercado);
+        textViewTiempoRestante = findViewById(R.id.textViewTiempoRestante);
+
         recyclerViewMercado.setLayoutManager(new LinearLayoutManager(this));
         adapter = new JugadorAdapter(listaAleatoria);
         recyclerViewMercado.setAdapter(adapter);
 
-        // CARGAR JUGADORES
-        cargarJugadoresDeFirebase();
+        // COMPROBAR SI SE DEBE CARGAR NUEVA LISTA
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        long ultimaActualizacion = prefs.getLong(KEY_TIMESTAMP, 0);
+        long ahora = System.currentTimeMillis();
+
+        if (ahora - ultimaActualizacion >= TIEMPO_ESPERA_MS) {
+            cargarJugadoresDeFirebase();
+        } else {
+            cargarJugadoresDesdeCache();
+        }
+
+        actualizarTiempoRestante();
     }
 
     private void cargarJugadoresDeFirebase() {
@@ -112,7 +136,6 @@ public class MercadoActivity extends AppCompatActivity {
                     }
                 }
 
-                // Filtrar y ordenar sólo jugadores con nombre no nulo
                 List<Jugador> jugadoresValidos = new ArrayList<>();
                 for (Jugador j : listaJugadores) {
                     if (j.getNombre() != null) {
@@ -126,6 +149,17 @@ public class MercadoActivity extends AppCompatActivity {
                 listaJugadores.addAll(jugadoresValidos);
 
                 elegirJugadoresAleatorios();
+
+                // Guardar en cache
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                StringBuilder sb = new StringBuilder();
+                for (Jugador j : listaAleatoria) {
+                    sb.append(j.getNombre()).append(",");
+                }
+                editor.putString(KEY_JUGADORES, sb.toString());
+                editor.putLong(KEY_TIMESTAMP, System.currentTimeMillis());
+                editor.apply();
             }
 
             @Override
@@ -153,6 +187,70 @@ public class MercadoActivity extends AppCompatActivity {
         }
 
         adapter.notifyDataSetChanged();
+    }
+
+    private void cargarJugadoresDesdeCache() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String jugadoresNombres = prefs.getString(KEY_JUGADORES, "");
+        if (jugadoresNombres.isEmpty()) return;
+
+        String[] nombres = jugadoresNombres.split(",");
+        List<String> nombresLista = Arrays.asList(nombres);
+
+        dbRef = FirebaseDatabase.getInstance().getReference("jugadores");
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listaAleatoria.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Jugador jugador = ds.getValue(Jugador.class);
+                    if (jugador != null && nombresLista.contains(jugador.getNombre())) {
+                        listaAleatoria.add(jugador);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MercadoActivity.this, "Error al cargar jugadores en caché", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void actualizarTiempoRestante() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        long ultimaActualizacion = prefs.getLong(KEY_TIMESTAMP, 0);
+        long siguienteActualizacion = ultimaActualizacion + TIEMPO_ESPERA_MS;
+
+        updateTimerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long ahora = System.currentTimeMillis();
+                long restante = siguienteActualizacion - ahora;
+
+                if (restante <= 0) {
+                    textViewTiempoRestante.setText("¡Mercado actualizado!");
+                } else {
+                    long horas = restante / (1000 * 60 * 60);
+                    long minutos = (restante / (1000 * 60)) % 60;
+                    long segundos = (restante / 1000) % 60;
+
+                    String tiempoFormateado = String.format("Próxima actualización en: %02dh %02dm %02ds", horas, minutos, segundos);
+                    textViewTiempoRestante.setText(tiempoFormateado);
+
+                    handler.postDelayed(this, 1000);
+                }
+            }
+        };
+
+        handler.post(updateTimerRunnable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(updateTimerRunnable);
     }
 
     @Override

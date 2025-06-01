@@ -22,7 +22,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
         this.listaJugadores = listaJugadores;
     }
 
-    // Mapa fijo: equipo → camiseta
+    // Mapa fijo: equipo → camiseta (todos los equipos tienen una)
     private static final Map<String, Integer> camisetaPorEquipo = new HashMap<String, Integer>() {{
         put("Rayo Glacial", R.drawable.camiseta_azul);
         put("Trueno Rojo", R.drawable.camiseta_roja);
@@ -51,24 +51,27 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
         holder.tvPosicion.setText(jugador.getPosicion());
         holder.tvPrecio.setText("Precio: " + jugador.getPrecio());
         holder.tvPuntos.setText("Puntos: " + jugador.getPuntos());
+
+        String estado = jugador.getEstado().toLowerCase();
         holder.tvEstado.setText(jugador.getEstado());
 
-        switch (jugador.getEstado().toLowerCase()) {
+        switch (estado) {
             case "disponible":
-                holder.tvEstado.setTextColor(Color.parseColor("#4CAF50"));
+                holder.tvEstado.setTextColor(Color.parseColor("#4CAF50")); // verde
                 break;
-            case "lesionado":
-                holder.tvEstado.setTextColor(Color.parseColor("#F44336"));
+            case "en venta":
+                holder.tvEstado.setTextColor(Color.parseColor("#2196F3")); // azul
                 break;
-            case "sancionado":
-                holder.tvEstado.setTextColor(Color.parseColor("#FF9800"));
+            case "en propiedad":
+                holder.tvEstado.setTextColor(Color.parseColor("#9C27B0")); // morado
                 break;
             default:
-                holder.tvEstado.setTextColor(Color.parseColor("#888888"));
+                // En teoría no debería ocurrir porque solo usas estos estados
+                holder.tvEstado.setTextColor(Color.parseColor("#888888")); // gris por defecto
                 break;
         }
 
-        // No hay fallback: todos los equipos tienen camiseta
+        // Como todos los equipos tienen camiseta, no hay fallback
         holder.imgCamiseta.setImageResource(camisetaPorEquipo.get(jugador.getEquipo()));
     }
 
