@@ -47,7 +47,7 @@
             android:layout_marginTop="46dp"
             android:background="#3E4044"
             android:foregroundTint="#3E4044"
-            android:tint="#77C549"
+            app:tint="#77C549"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_menu_myplaces" />
@@ -94,7 +94,7 @@
             android:layout_marginTop="45dp"
             android:layout_marginEnd="13dp"
             android:background="#3E4044"
-            android:tint="#77C549"
+            app:tint="#77C549"
             app:layout_constraintEnd_toStartOf="@+id/correoregis"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView3"
@@ -108,7 +108,7 @@
             android:layout_marginTop="56dp"
             android:background="#3E4044"
             android:foregroundTint="#77C549"
-            android:tint="#77C549"
+            app:tint="#77C549"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView5"
             app:srcCompat="@android:drawable/ic_lock_idle_lock" />
@@ -155,31 +155,50 @@
             android:layout_marginEnd="65dp"
             android:layout_marginBottom="98dp"
             android:backgroundTint="#77C549"
-            android:text="Registrarse"
             android:onClick="registrar"
+            android:text="Registrarse"
             android:textColor="#3E4044"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/volvregis"
-            app:layout_constraintHorizontal_bias="0.387"
+            app:layout_constraintHorizontal_bias="0.325"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/contraregis" />
+            app:layout_constraintTop_toBottomOf="@+id/contraregis"
+            app:layout_constraintVertical_bias="1.0" />
 
         <CheckBox
             android:id="@+id/checkBox"
-            android:layout_width="302dp"
-            android:layout_height="42dp"
-            android:layout_marginStart="34dp"
-            android:layout_marginTop="31dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginBottom="22dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="1dp"
             android:buttonTint="#77C549"
-            android:text="Acepto todos los términos y condiciones"
+            android:text=""
+            android:textColor="#FCF5FD"
+            android:textColorHighlight="#77C549"
+            android:textColorHint="#77C549"
+            android:textColorLink="#77C549"
+            app:layout_constraintEnd_toStartOf="@+id/textTerminos"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnregis" />
+
+        <TextView
+            android:id="@+id/textTerminos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="42dp"
+            android:layout_marginEnd="61dp"
+            android:layout_marginBottom="34dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Acepto los Términos y Condiciones"
             android:textColor="#77C549"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/checkBox"
             app:layout_constraintTop_toBottomOf="@+id/volvregis" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
