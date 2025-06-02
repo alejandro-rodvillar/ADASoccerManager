@@ -26,12 +26,12 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
     private TextView textViewNombreUsuario, textViewCorreo, textViewNombreGuardado;
     private EditText editTextNombre;
-    private Button buttonGuardarNombre;
+    private Button buttonGuardarNombre, buttonCambiarContrasena;
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
-    private boolean estaEditando = false; // Empieza bloqueado, botón dice "Editar"
+    private boolean estaEditando = false;
 
     private SharedPreferences sharedPreferences;
 
@@ -40,13 +40,12 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_usuario);
 
-        // Referencias UI
         textViewNombreUsuario = findViewById(R.id.textViewNombreUsuario);
         textViewCorreo = findViewById(R.id.textViewCorreo);
         textViewNombreGuardado = findViewById(R.id.textViewNombreGuardado);
-
         editTextNombre = findViewById(R.id.editTextNombre);
         buttonGuardarNombre = findViewById(R.id.buttonGuardarNombre);
+        buttonCambiarContrasena = findViewById(R.id.buttonCambiarContrasena);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -56,7 +55,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         if (currentUser != null) {
             textViewCorreo.setText("Correo: " + currentUser.getEmail());
 
-            // Mostrar nombre de usuario desde Firestore para referencia (no se actualiza)
             db.collection("usuarios").document(currentUser.getUid()).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -81,25 +79,20 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             textViewNombreUsuario.setText("Nombre de usuario: no disponible");
         }
 
-        // Crear una key única para cada usuario para guardar su nombre localmente
         String keyNombreUsuario = currentUser != null ? "nombreGuardado_" + currentUser.getUid() : null;
-
-        // Cargar el nombre guardado localmente para este usuario
         String nombreGuardadoLocal = "";
         if (keyNombreUsuario != null) {
             nombreGuardadoLocal = sharedPreferences.getString(keyNombreUsuario, "");
         }
+
         textViewNombreGuardado.setText(nombreGuardadoLocal);
         editTextNombre.setText(nombreGuardadoLocal);
 
-        // Estado inicial según si hay nombre guardado o no
         if (nombreGuardadoLocal.isEmpty()) {
-            // No hay nombre guardado, permitir editar y botón "Guardar"
             editTextNombre.setEnabled(true);
             buttonGuardarNombre.setText("Guardar");
             estaEditando = true;
         } else {
-            // Hay nombre guardado, bloqueado y botón "Editar"
             editTextNombre.setEnabled(false);
             buttonGuardarNombre.setText("Editar");
             estaEditando = false;
@@ -109,7 +102,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         buttonGuardarNombre.setOnClickListener(v -> {
             if (estaEditando) {
-                // Guardar nombre en SharedPreferences
                 String nombreNuevo = editTextNombre.getText().toString().trim();
 
                 if (nombreNuevo.isEmpty()) {
@@ -122,27 +114,40 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                 }
 
                 if (keyNombreUsuario != null) {
-                    // Guardar en SharedPreferences usando la key del usuario actual
                     sharedPreferences.edit().putString(keyNombreUsuario, nombreNuevo).apply();
                 }
 
-                // Mostrar en UI
                 textViewNombreGuardado.setText(nombreNuevo);
-
-                // Bloquear edición y cambiar texto botón
                 editTextNombre.setEnabled(false);
                 buttonGuardarNombre.setText("Editar");
                 estaEditando = false;
 
                 Toast.makeText(PerfilUsuarioActivity.this, "Nombre guardado", Toast.LENGTH_SHORT).show();
             } else {
-                // Permitir edición
                 editTextNombre.setEnabled(true);
                 editTextNombre.requestFocus();
-
-                // Cambiar botón a "Guardar"
                 buttonGuardarNombre.setText("Guardar");
                 estaEditando = true;
+            }
+        });
+
+        buttonCambiarContrasena.setOnClickListener(v -> {
+            if (currentUser != null) {
+                String email = currentUser.getEmail();
+                if (email != null && !email.isEmpty()) {
+                    FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(this, "Correo de cambio de contraseña enviado a " + email, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(this, "Error al enviar el correo de cambio de contraseña", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(this, "Correo de usuario no disponible", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "No hay usuario autenticado", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -165,16 +170,16 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
             } else if (id == R.id.nav_leagues) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, LigasActivity.class));
+                startActivity(new Intent(this, LigasActivity.class));
                 return true;
             } else if (id == R.id.nav_my_team) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, EquipoActivity.class));
+                startActivity(new Intent(this, EquipoActivity.class));
                 return true;
             } else if (id == R.id.nav_market) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, MercadoActivity.class));
+                startActivity(new Intent(this, MercadoActivity.class));
                 return true;
             }
             return false;
@@ -184,11 +189,11 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if (id == R.id.nav_profile) {
-                Toast.makeText(PerfilUsuarioActivity.this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show();
             } else if (id == R.id.nav_settings) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, SettingsActivity.class));
+                startActivity(new Intent(this, SettingsActivity.class));
             } else if (id == R.id.nav_logout) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, LoginActivity.class));
+                startActivity(new Intent(this, LoginActivity.class));
             }
             drawerLayout.closeDrawers();
             return true;
