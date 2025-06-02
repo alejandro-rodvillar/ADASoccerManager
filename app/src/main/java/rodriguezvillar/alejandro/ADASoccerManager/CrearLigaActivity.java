@@ -2,12 +2,10 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,19 +15,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class CrearLigaActivity extends AppCompatActivity {
 
+    // UI y Firebase
     private DrawerLayout drawerLayout;
-    private DatabaseReference databaseRef;
+    private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
     private EditText etLeagueName, etParticipants;
 
@@ -38,19 +36,18 @@ public class CrearLigaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crear_liga);
 
+        // Inicializa los campos de entrada de texto
         etLeagueName = findViewById(R.id.etLeagueName);
         etParticipants = findViewById(R.id.etParticipants);
 
+        // Obtiene el usuario actual y la instancia de Firestore
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        databaseRef = FirebaseDatabase.getInstance().getReference();
+        firestore = FirebaseFirestore.getInstance();
 
-        findViewById(R.id.btnSubmit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                crearLiga();
-            }
-        });
+        // Asocia el botón de crear liga con la función crearLiga()
+        findViewById(R.id.btnSubmit).setOnClickListener(v -> crearLiga());
 
+        // Configura la barra superior y el menú lateral
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -62,52 +59,54 @@ public class CrearLigaActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Acciones del menú lateral
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_profile) {
-                startActivity(new Intent(CrearLigaActivity.this, PerfilUsuarioActivity.class));
+                startActivity(new Intent(this, PerfilUsuarioActivity.class));
             } else if (id == R.id.nav_settings) {
-                startActivity(new Intent(CrearLigaActivity.this, SettingsActivity.class));
+                startActivity(new Intent(this, SettingsActivity.class));
             } else if (id == R.id.nav_logout) {
-                startActivity(new Intent(CrearLigaActivity.this, LoginActivity.class));
+                startActivity(new Intent(this, LoginActivity.class));
                 finish();
             }
-
             drawerLayout.closeDrawers();
             return true;
         });
 
+        // Acciones del menú inferior
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_home) {
-                startActivity(new Intent(CrearLigaActivity.this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
             } else if (id == R.id.nav_leagues) {
-                startActivity(new Intent(CrearLigaActivity.this, LigasActivity.class));
+                startActivity(new Intent(this, LigasActivity.class));
                 return true;
             } else if (id == R.id.nav_my_team) {
-                startActivity(new Intent(CrearLigaActivity.this, EquipoActivity.class));
+                startActivity(new Intent(this, EquipoActivity.class));
                 return true;
             } else if (id == R.id.nav_market) {
-                startActivity(new Intent(CrearLigaActivity.this, MercadoActivity.class));
+                startActivity(new Intent(this, MercadoActivity.class));
                 return true;
             }
             return false;
         });
     }
 
+    // Función principal para crear una liga
     private void crearLiga() {
         String leagueName = etLeagueName.getText().toString().trim();
         String participantsStr = etParticipants.getText().toString().trim();
 
+        // Validación del nombre
         if (leagueName.isEmpty()) {
             etLeagueName.setError("Ingresa el nombre de la liga");
             etLeagueName.requestFocus();
             return;
         }
 
+        // Validación del número de participantes
         if (participantsStr.isEmpty()) {
             etParticipants.setError("Ingresa el número de participantes");
             etParticipants.requestFocus();
@@ -122,52 +121,61 @@ public class CrearLigaActivity extends AppCompatActivity {
             return;
         }
 
+        // Verifica que el número esté entre 2 y 5
         if (participants < 2 || participants > 5) {
             etParticipants.setError("Debe ser entre 2 y 5 participantes");
             return;
         }
 
+        // Verifica que haya un usuario autenticado
         if (currentUser == null) {
             Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Referencia al documento del usuario en Firestore
         String uid = currentUser.getUid();
+        DocumentReference userRef = firestore.collection("usuarios").document(uid);
 
-        // comprobamos si el usuario ya tiene una liga
-        databaseRef.child("usuarios").child(uid).child("ligaId").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Toast.makeText(CrearLigaActivity.this, "Ya perteneces a una liga. Solo puedes unirte o crear una.", Toast.LENGTH_LONG).show();
-                } else {
-                    String ligaId = UUID.randomUUID().toString().substring(0, 8);
+        // Verifica si el usuario ya tiene una liga asignada
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists() && documentSnapshot.contains("ligaId")) {
+                Toast.makeText(this, "Ya perteneces a una liga. Solo puedes unirte o crear una.", Toast.LENGTH_LONG).show();
+            } else {
+                // Genera un ID aleatorio para la nueva liga
+                String ligaId = UUID.randomUUID().toString().substring(0, 8);
+                DocumentReference ligaRef = firestore.collection("ligas").document(ligaId);
 
-                    HashMap<String, Object> ligaData = new HashMap<>();
-                    ligaData.put("nombre", leagueName);
-                    ligaData.put("maxParticipantes", participants);
-                    ligaData.put("creador", uid);
-                    HashMap<String, Boolean> jugadores = new HashMap<>();
-                    jugadores.put(uid, true);
-                    ligaData.put("jugadores", jugadores);
+                // Datos de la liga que se van a guardar
+                Map<String, Object> ligaData = new HashMap<>();
+                ligaData.put("nombre", leagueName);
+                ligaData.put("maxParticipantes", participants);
+                ligaData.put("creador", uid);
+                ligaData.put("ligaId", ligaId);
 
-                    databaseRef.child("ligas").child(ligaId).setValue(ligaData);
-                    databaseRef.child("usuarios").child(uid).child("ligaId").setValue(ligaId);
+                // Agrega al usuario actual como primer jugador
+                Map<String, Boolean> jugadores = new HashMap<>();
+                jugadores.put(uid, true);
+                ligaData.put("jugadores", jugadores);
 
-                    Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
+                // Guarda la liga en Firestore
+                ligaRef.set(ligaData).addOnSuccessListener(unused -> {
+                    // Añade el ID de la liga al documento del usuario
+                    userRef.set(Map.of("ligaId", ligaId), SetOptions.merge());
 
+                    Toast.makeText(this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
                     etLeagueName.setText("");
                     etParticipants.setText("");
 
-                    startActivity(new Intent(CrearLigaActivity.this, MainActivity.class));
+                    // Navega a pantalla principal
+                    startActivity(new Intent(this, MainActivity.class));
                     finish();
-                }
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al crear la liga: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(CrearLigaActivity.this, "Error al comprobar tu liga: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error al comprobar usuario: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
     }
 }

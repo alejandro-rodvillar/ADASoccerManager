@@ -16,6 +16,7 @@
         android:backgroundTint="#FCF5FD">
 
         <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -43,7 +44,6 @@
 
         <!-- Botones -->
 
-        <!-- Bottom Navigation -->
         <Button
             android:id="@+id/btnCreateLeague"
             android:layout_width="234dp"
@@ -57,6 +57,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvWelcome"
             app:layout_constraintVertical_bias="0.077" />
+
+        <Button
+            android:id="@+id/btnManageLeague"
+            android:layout_width="234dp"
+            android:layout_height="49dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#77C448"
+            android:text="Gestionar Liga"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWelcome"
+            app:layout_constraintVertical_bias="0.252"
+            android:visibility="gone"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
