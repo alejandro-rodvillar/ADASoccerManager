@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,16 +10,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/textViewCorreo2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="Nombre de usuario: j.perez_"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewEdad" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -37,13 +26,14 @@
             android:id="@+id/textViewProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Perfil de Usuario"
-            android:textSize="22sp"
-            android:textStyle="bold"
             android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            android:fontFamily="@font/audiowide"
+            android:text="PERFIL DE USUARIO"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <ImageView
             android:id="@+id/imageViewProfile"
@@ -53,49 +43,83 @@
             android:layout_marginTop="16dp"
             app:layout_constraintTop_toBottomOf="@id/textViewProfile"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Texto que aparece debajo de la imagen con el nombre guardado -->
         <TextView
-            android:id="@+id/textViewNombre"
+            android:id="@+id/textViewNombreGuardado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre: Juan"
+            android:text=""
             android:textSize="18sp"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/imageViewProfile"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Contenedor horizontal para EditText y botón a la derecha -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutNombreBoton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/textViewNombreGuardado"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <EditText
+                android:id="@+id/editTextNombre"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:hint="Introduce tu nombre"
+                android:inputType="textPersonName"
+                android:padding="8dp"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/buttonGuardarNombre"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <Button
+                android:id="@+id/buttonGuardarNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:text="Guardar"
+                android:textAllCaps="false"
+                android:backgroundTint="#78C649"
+                android:textColor="#3E4044"
+                app:layout_constraintStart_toEndOf="@id/editTextNombre"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/textViewApellidos"
+            android:id="@+id/textViewNombreUsuario"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apellidos: Pérez Gómez"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="16dp"
+            android:text="Nombre de usuario: j.perez_"
             android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/textViewNombre"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:id="@+id/textViewEdad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edad: 28 años"
-            android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/textViewApellidos"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"/>
+            app:layout_constraintTop_toBottomOf="@id/layoutNombreBoton" />
 
         <TextView
             android:id="@+id/textViewCorreo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="8dp"
             android:text="Correo: juan.perez@example.com"
             android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/textViewEdad"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"/>
+            app:layout_constraintTop_toBottomOf="@id/textViewNombreUsuario" />
 
-        <!-- Bottom Navigation -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
