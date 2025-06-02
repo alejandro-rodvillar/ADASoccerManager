@@ -154,15 +154,15 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
     }
 
     private void filtrarJugadores(String texto) {
-        texto = texto.toLowerCase();
+        texto = normalizar(texto);
         listaFiltrada.clear();
 
         if (texto.isEmpty()) {
             listaFiltrada.addAll(listaJugadores);
         } else {
             for (Jugador j : listaJugadores) {
-                String nombre = j.getNombre() != null ? j.getNombre().toLowerCase() : "";
-                String equipo = j.getEquipo() != null ? j.getEquipo().toLowerCase() : "";
+                String nombre = j.getNombre() != null ? normalizar(j.getNombre()) : "";
+                String equipo = j.getEquipo() != null ? normalizar(j.getEquipo()) : "";
 
                 if (nombre.contains(texto) || equipo.contains(texto)) {
                     listaFiltrada.add(j);
@@ -172,6 +172,7 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         actualizarVistaSinResultados();
     }
+
 
     private void actualizarVistaSinResultados() {
         if (listaFiltrada.isEmpty()) {
