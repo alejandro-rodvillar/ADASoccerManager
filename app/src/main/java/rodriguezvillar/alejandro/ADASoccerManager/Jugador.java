@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 public class Jugador {
+    private String id;
     private String nombre;
     private String equipo;
     private String posicion;
@@ -10,6 +11,7 @@ public class Jugador {
 
     public Jugador() {} // Requerido por Firestore
 
+    public String getId() { return id; }
     public String getNombre() { return nombre; }
     public String getEquipo() { return equipo; }
     public String getPosicion() { return posicion; }
@@ -17,6 +19,7 @@ public class Jugador {
     public int getPuntos() { return puntos; }
     public String getEstado() { return estado; }
 
+    public void setId(String id) { this.id = id; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setEquipo(String equipo) { this.equipo = equipo; }
     public void setPosicion(String posicion) { this.posicion = posicion; }

@@ -133,14 +133,15 @@ public class MercadoActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
                     if (jugador != null && jugador.getNombre() != null) {
+                        jugador.setId(ds.getKey());  // <- asignamos el id desde Firebase
                         listaJugadores.add(jugador);
                     }
                 }
 
-                // Resetear todos a "disponible"
+                // Resetear todos a "disponible" y actualizar Firebase con claves correctas (usando id)
                 for (Jugador j : listaJugadores) {
                     j.setEstado("disponible");
-                    dbRef.child(j.getNombre()).setValue(j); // Actualizar en Firebase
+                    dbRef.child(j.getId()).setValue(j);  // <- clave id, no nombre
                 }
 
                 elegirJugadoresAleatorios();
@@ -148,7 +149,7 @@ public class MercadoActivity extends AppCompatActivity {
                 // Cambiar estado de los seleccionados a "en venta"
                 for (Jugador j : listaAleatoria) {
                     j.setEstado("en venta");
-                    dbRef.child(j.getNombre()).setValue(j); // Actualizar en Firebase
+                    dbRef.child(j.getId()).setValue(j);  // <- clave id, no nombre
                 }
 
                 // Guardar en cache
@@ -176,7 +177,6 @@ public class MercadoActivity extends AppCompatActivity {
         listaAleatoria.clear();
 
         if (listaJugadores.size() <= 5) {
-            // Evitar duplicados: usar Set para filtrar
             Set<String> nombresVistos = new HashSet<>();
             for (Jugador j : listaJugadores) {
                 if (!nombresVistos.contains(j.getNombre())) {
@@ -226,13 +226,14 @@ public class MercadoActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
                     if (jugador != null) {
+                        jugador.setId(ds.getKey()); // también aquí asignamos id
                         if (nombresSet.contains(jugador.getNombre()) && !contieneJugadorPorNombre(listaAleatoria, jugador.getNombre())) {
                             jugador.setEstado("en venta");
-                            dbRef.child(jugador.getNombre()).setValue(jugador);
+                            dbRef.child(jugador.getId()).setValue(jugador);
                             listaAleatoria.add(jugador);
                         } else {
                             jugador.setEstado("disponible");
-                            dbRef.child(jugador.getNombre()).setValue(jugador);
+                            dbRef.child(jugador.getId()).setValue(jugador);
                         }
                     }
                 }
