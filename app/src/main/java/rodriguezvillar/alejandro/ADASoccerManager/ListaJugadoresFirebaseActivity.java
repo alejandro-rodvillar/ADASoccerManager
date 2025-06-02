@@ -28,7 +28,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
 
@@ -40,6 +42,7 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
 
     private List<Jugador> listaJugadores = new ArrayList<>();
     private List<Jugador> listaFiltrada = new ArrayList<>();
+    private Set<String> jugadoresEnVenta = new HashSet<>();
 
     private DatabaseReference dbRef;
 
@@ -66,9 +69,8 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
         adapter = new JugadorAdapter(listaFiltrada);
         recyclerView.setAdapter(adapter);
 
-        cargarJugadoresDeFirebase();
+        cargarJugadoresEnVenta();
 
-        // Foco automático y mostrar teclado
         etBuscarJugador.requestFocus();
         etBuscarJugador.postDelayed(() -> {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -93,22 +95,49 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
         });
     }
 
+    private void cargarJugadoresEnVenta() {
+        FirebaseDatabase.getInstance().getReference("jugadoresEnVenta")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        jugadoresEnVenta.clear();
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String nombre = ds.getKey();
+                            if (nombre != null) {
+                                jugadoresEnVenta.add(normalizar(nombre));
+                            }
+                        }
+                        cargarJugadoresDeFirebase();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+    }
+
     private void cargarJugadoresDeFirebase() {
         dbRef = FirebaseDatabase.getInstance().getReference("jugadores");
-        dbRef.addValueEventListener(new ValueEventListener() {
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaJugadores.clear();
+                Set<String> nombresUnicos = new HashSet<>();
+
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
-                    if (jugador != null) {
+                    if (jugador != null && jugador.getNombre() != null && nombresUnicos.add(jugador.getNombre())) {
+                        String nombreNormalizado = normalizar(jugador.getNombre());
+                        if (jugadoresEnVenta.contains(nombreNormalizado)) {
+                            jugador.setEstado("en venta");
+                        }
                         listaJugadores.add(jugador);
                     }
                 }
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    // Evitar NullPointerException comprobando nombre != null antes
                     listaJugadores.removeIf(j -> j.getNombre() == null);
-                    Collections.sort(listaJugadores, Comparator.comparing(j -> j.getNombre().toLowerCase()));
+                    listaJugadores.sort(Comparator.comparing(j -> j.getNombre().toLowerCase()));
                 }
 
                 listaFiltrada.clear();
@@ -120,7 +149,6 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Manejar error si es necesario
             }
         });
     }
@@ -136,14 +164,12 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
                 String nombre = j.getNombre() != null ? j.getNombre().toLowerCase() : "";
                 String equipo = j.getEquipo() != null ? j.getEquipo().toLowerCase() : "";
 
-                // Filtrar por nombre del jugador o nombre del equipo
                 if (nombre.contains(texto) || equipo.contains(texto)) {
                     listaFiltrada.add(j);
                 }
             }
         }
         adapter.notifyDataSetChanged();
-
         actualizarVistaSinResultados();
     }
 
@@ -157,6 +183,23 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
         }
     }
 
+    private void volverAMercado() {
+        Intent intent = new Intent(this, MercadoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private String normalizar(String texto) {
+        return texto.trim().toLowerCase()
+                .replace("á", "a")
+                .replace("é", "e")
+                .replace("í", "i")
+                .replace("ó", "o")
+                .replace("ú", "u")
+                .replace("ñ", "n");
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -164,12 +207,5 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void volverAMercado() {
-        Intent intent = new Intent(this, MercadoActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
     }
 }

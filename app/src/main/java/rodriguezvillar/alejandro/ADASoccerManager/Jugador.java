@@ -17,5 +17,10 @@ public class Jugador {
     public int getPuntos() { return puntos; }
     public String getEstado() { return estado; }
 
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setEquipo(String equipo) { this.equipo = equipo; }
+    public void setPosicion(String posicion) { this.posicion = posicion; }
+    public void setPuntos(int puntos) { this.puntos = puntos; }
+    public void setPrecio(int precio) { this.precio = precio; }
     public void setEstado(String estado) { this.estado = estado; }
 }

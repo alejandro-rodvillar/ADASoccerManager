@@ -27,9 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class MercadoActivity extends AppCompatActivity {
 
@@ -136,19 +137,19 @@ public class MercadoActivity extends AppCompatActivity {
                     }
                 }
 
-                List<Jugador> jugadoresValidos = new ArrayList<>();
+                // Resetear todos a "disponible"
                 for (Jugador j : listaJugadores) {
-                    if (j.getNombre() != null) {
-                        jugadoresValidos.add(j);
-                    }
+                    j.setEstado("disponible");
+                    dbRef.child(j.getNombre()).setValue(j); // Actualizar en Firebase
                 }
-                Collections.sort(jugadoresValidos, (j1, j2) ->
-                        j1.getNombre().toLowerCase().compareTo(j2.getNombre().toLowerCase()));
-
-                listaJugadores.clear();
-                listaJugadores.addAll(jugadoresValidos);
 
                 elegirJugadoresAleatorios();
+
+                // Cambiar estado de los seleccionados a "en venta"
+                for (Jugador j : listaAleatoria) {
+                    j.setEstado("en venta");
+                    dbRef.child(j.getNombre()).setValue(j); // Actualizar en Firebase
+                }
 
                 // Guardar en cache
                 SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -160,6 +161,8 @@ public class MercadoActivity extends AppCompatActivity {
                 editor.putString(KEY_JUGADORES, sb.toString());
                 editor.putLong(KEY_TIMESTAMP, System.currentTimeMillis());
                 editor.apply();
+
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -173,20 +176,37 @@ public class MercadoActivity extends AppCompatActivity {
         listaAleatoria.clear();
 
         if (listaJugadores.size() <= 5) {
-            listaAleatoria.addAll(listaJugadores);
+            // Evitar duplicados: usar Set para filtrar
+            Set<String> nombresVistos = new HashSet<>();
+            for (Jugador j : listaJugadores) {
+                if (!nombresVistos.contains(j.getNombre())) {
+                    nombresVistos.add(j.getNombre());
+                    listaAleatoria.add(j);
+                }
+            }
         } else {
             Random random = new Random();
-            List<Integer> indicesUsados = new ArrayList<>();
+            Set<Integer> indicesUsados = new HashSet<>();
             while (listaAleatoria.size() < 5) {
                 int index = random.nextInt(listaJugadores.size());
-                if (!indicesUsados.contains(index)) {
+                Jugador candidato = listaJugadores.get(index);
+                if (!indicesUsados.contains(index) && !contieneJugadorPorNombre(listaAleatoria, candidato.getNombre())) {
                     indicesUsados.add(index);
-                    listaAleatoria.add(listaJugadores.get(index));
+                    listaAleatoria.add(candidato);
                 }
             }
         }
 
         adapter.notifyDataSetChanged();
+    }
+
+    private boolean contieneJugadorPorNombre(List<Jugador> lista, String nombre) {
+        for (Jugador j : lista) {
+            if (j.getNombre().equals(nombre)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void cargarJugadoresDesdeCache() {
@@ -202,10 +222,18 @@ public class MercadoActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaAleatoria.clear();
+                Set<String> nombresSet = new HashSet<>(nombresLista);
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
-                    if (jugador != null && nombresLista.contains(jugador.getNombre())) {
-                        listaAleatoria.add(jugador);
+                    if (jugador != null) {
+                        if (nombresSet.contains(jugador.getNombre()) && !contieneJugadorPorNombre(listaAleatoria, jugador.getNombre())) {
+                            jugador.setEstado("en venta");
+                            dbRef.child(jugador.getNombre()).setValue(jugador);
+                            listaAleatoria.add(jugador);
+                        } else {
+                            jugador.setEstado("disponible");
+                            dbRef.child(jugador.getNombre()).setValue(jugador);
+                        }
                     }
                 }
                 adapter.notifyDataSetChanged();
