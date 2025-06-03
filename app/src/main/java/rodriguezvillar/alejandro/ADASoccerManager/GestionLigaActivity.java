@@ -28,16 +28,19 @@ public class GestionLigaActivity extends AppCompatActivity {
     private String ligaIdActual;
     private boolean esCreador = false;
 
+    private FirebaseUser currentUser;
+    private String uid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gestion_liga);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) return;
 
-        String uid = currentUser.getUid();
+        uid = currentUser.getUid();
 
         // Enlaces UI
         tvNombreLiga = findViewById(R.id.tvNombreLiga);
@@ -56,18 +59,37 @@ public class GestionLigaActivity extends AppCompatActivity {
                     if (ligaSnapshot.child("jugadores").hasChild(uid)) {
                         ligaIdActual = ligaSnapshot.getKey();
                         String nombreLiga = ligaSnapshot.child("nombre").getValue(String.class);
-                        String creador = ligaSnapshot.child("creador").getValue(String.class);
+                        String creadorUid = ligaSnapshot.child("creador").getValue(String.class);
 
-                        esCreador = uid.equals(creador);
+                        esCreador = uid.equals(creadorUid);
                         tvNombreLiga.setText("Nombre de la Liga: " + nombreLiga);
-                        tvCreadorLiga.setText("Creador: " + creador);
                         tvCodigoLiga.setText("Código de la Liga: " + ligaIdActual);
                         tvParticipantes.setText("Participantes: " + ligaSnapshot.child("jugadores").getChildrenCount());
 
+                        // Aquí hacemos la consulta para obtener el nombre del creador
+                        mDatabase.child("usuarios").child(creadorUid).child("nombre")
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot nombreSnapshot) {
+                                        String nombreCreador = nombreSnapshot.getValue(String.class);
+                                        if (nombreCreador == null || nombreCreador.isEmpty()) {
+                                            nombreCreador = "Desconocido";
+                                        }
+                                        tvCreadorLiga.setText("Creador: " + nombreCreador);
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        // Si hay error, mostramos el UID como fallback
+                                        tvCreadorLiga.setText("Creador: " + creadorUid);
+                                    }
+                                });
+
                         if (esCreador) {
                             btnEliminarLiga.setVisibility(View.VISIBLE);
+                            btnSalirLiga.setVisibility(View.GONE);
                         } else {
                             btnSalirLiga.setVisibility(View.VISIBLE);
+                            btnEliminarLiga.setVisibility(View.GONE);
                         }
 
                         break;
@@ -94,22 +116,14 @@ public class GestionLigaActivity extends AppCompatActivity {
         // Salir de liga
         btnSalirLiga.setOnClickListener(v -> {
             if (ligaIdActual != null) {
-                mDatabase.child("ligas").child(ligaIdActual).child("jugadores").child(uid).removeValue()
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(GestionLigaActivity.this, "Has salido de la liga", Toast.LENGTH_SHORT).show();
-                            finish();
-                        });
+                salirDeLiga(ligaIdActual, uid);
             }
         });
 
         // Eliminar liga
         btnEliminarLiga.setOnClickListener(v -> {
             if (ligaIdActual != null) {
-                mDatabase.child("ligas").child(ligaIdActual).removeValue()
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(GestionLigaActivity.this, "Liga eliminada", Toast.LENGTH_SHORT).show();
-                            finish();
-                        });
+                eliminarLiga(ligaIdActual);
             }
         });
 
@@ -161,5 +175,74 @@ public class GestionLigaActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    private void salirDeLiga(String ligaId, String userId) {
+        // Eliminar campo ligaId del usuario
+        mDatabase.child("usuarios").child(userId).child("ligaId").removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Eliminar usuario de la lista de jugadores en la liga
+                        mDatabase.child("ligas").child(ligaId).child("jugadores").child(userId).removeValue()
+                                .addOnCompleteListener(task2 -> {
+                                    if (task2.isSuccessful()) {
+                                        Toast.makeText(GestionLigaActivity.this, "Has salido de la liga", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    } else {
+                                        Toast.makeText(GestionLigaActivity.this, "Error al salir de la liga", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(GestionLigaActivity.this, "Error al actualizar usuario", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void eliminarLiga(String ligaId) {
+        // Obtener lista de jugadores
+        mDatabase.child("ligas").child(ligaId).child("jugadores").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    int totalJugadores = (int) snapshot.getChildrenCount();
+                    if (totalJugadores == 0) {
+                        borrarLigaYTerminar(ligaId);
+                        return;
+                    }
+
+                    final int[] eliminados = {0};
+                    for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
+                        String jugadorId = jugadorSnap.getKey();
+                        mDatabase.child("usuarios").child(jugadorId).child("ligaId").removeValue()
+                                .addOnCompleteListener(task -> {
+                                    eliminados[0]++;
+                                    if (eliminados[0] == totalJugadores) {
+                                        borrarLigaYTerminar(ligaId);
+                                    }
+                                });
+                    }
+                } else {
+                    // No hay jugadores, eliminar liga directamente
+                    borrarLigaYTerminar(ligaId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(GestionLigaActivity.this, "Error leyendo jugadores: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void borrarLigaYTerminar(String ligaId) {
+        mDatabase.child("ligas").child(ligaId).removeValue()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(GestionLigaActivity.this, "Liga eliminada y usuarios actualizados", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(GestionLigaActivity.this, "Error eliminando liga", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }
