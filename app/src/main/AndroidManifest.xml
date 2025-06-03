@@ -63,6 +63,8 @@
             android:name=".ListaJugadoresFirebaseActivity"
             android:exported="true"
             android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name=".GestionLigaActivity" />
+
 
         <meta-data
             android:name="preloaded_fonts"

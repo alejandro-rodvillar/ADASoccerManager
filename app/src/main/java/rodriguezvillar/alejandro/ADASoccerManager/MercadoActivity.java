@@ -102,6 +102,7 @@ public class MercadoActivity extends AppCompatActivity {
             return false;
         });
 
+
         // VIEWS
         recyclerViewMercado = findViewById(R.id.recyclerViewMercado);
         textViewTiempoRestante = findViewById(R.id.textViewTiempoRestante);
