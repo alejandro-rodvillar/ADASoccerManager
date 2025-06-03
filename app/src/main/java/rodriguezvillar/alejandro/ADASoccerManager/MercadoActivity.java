@@ -1,7 +1,6 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -26,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -41,16 +39,14 @@ public class MercadoActivity extends AppCompatActivity {
     private List<Jugador> listaJugadores = new ArrayList<>();
     private List<Jugador> listaAleatoria = new ArrayList<>();
     private DatabaseReference dbRef;
+    private DatabaseReference mercadoRef; // referencia a nodo mercado
     private TextView textViewTiempoRestante;
 
     private Handler handler = new Handler();
     private Runnable updateTimerRunnable;
 
-    // SharedPreferences
-    private static final String PREFS_NAME = "MercadoPrefs";
-    private static final String KEY_JUGADORES = "JugadoresMercado";
-    private static final String KEY_TIMESTAMP = "UltimaActualizacion";
-    private static final long TIEMPO_ESPERA_MS = 24 * 60 * 60 * 1000; // 24 horas
+    // Cambiado a 2 minutos (120.000 ms)
+    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 2 minutos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +98,6 @@ public class MercadoActivity extends AppCompatActivity {
             return false;
         });
 
-
         // VIEWS
         recyclerViewMercado = findViewById(R.id.recyclerViewMercado);
         textViewTiempoRestante = findViewById(R.id.textViewTiempoRestante);
@@ -111,21 +106,61 @@ public class MercadoActivity extends AppCompatActivity {
         adapter = new JugadorAdapter(listaAleatoria, true);
         recyclerViewMercado.setAdapter(adapter);
 
-        // COMPROBAR SI SE DEBE CARGAR NUEVA LISTA
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        long ultimaActualizacion = prefs.getLong(KEY_TIMESTAMP, 0);
-        long ahora = System.currentTimeMillis();
+        mercadoRef = FirebaseDatabase.getInstance().getReference("mercado");
 
-        if (ahora - ultimaActualizacion >= TIEMPO_ESPERA_MS) {
-            cargarJugadoresDeFirebase();
-        } else {
-            cargarJugadoresDesdeCache();
-        }
+        // Asegurar que el nodo ultimaActualizacion existe, y luego continuar
+        inicializarUltimaActualizacion(() -> {
+            // Ahora que ultimaActualizacion existe, procedemos con la carga
+            mercadoRef.child("ultimaActualizacion").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    long ultimaActualizacion = 0;
+                    if (snapshot.exists()) {
+                        ultimaActualizacion = snapshot.getValue(Long.class);
+                    }
+                    long ahora = System.currentTimeMillis();
 
-        actualizarTiempoRestante();
+                    if (ahora - ultimaActualizacion >= TIEMPO_ESPERA_MS) {
+                        actualizarMercadoYTimestamp(ahora);
+                    } else {
+                        cargarJugadoresDesdeCache();
+                    }
+
+                    actualizarTiempoRestante(ultimaActualizacion);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(MercadoActivity.this, "Error al obtener la última actualización", Toast.LENGTH_SHORT).show();
+                    cargarJugadoresDesdeCache();
+                }
+            });
+        });
     }
 
-    private void cargarJugadoresDeFirebase() {
+    // Método que crea el nodo mercado/ultimaActualizacion si no existe
+    private void inicializarUltimaActualizacion(Runnable onComplete) {
+        mercadoRef.child("ultimaActualizacion").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    mercadoRef.child("ultimaActualizacion").setValue(System.currentTimeMillis())
+                            .addOnCompleteListener(task -> {
+                                onComplete.run();
+                            });
+                } else {
+                    onComplete.run();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                onComplete.run();
+            }
+        });
+    }
+
+    private void actualizarMercadoYTimestamp(long timestamp) {
         dbRef = FirebaseDatabase.getInstance().getReference("jugadores");
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -137,25 +172,16 @@ public class MercadoActivity extends AppCompatActivity {
                     if (jugador != null && jugador.getNombre() != null) {
                         jugador.setId(ds.getKey());
                         listaJugadores.add(jugador);
-                        // Solo añadir al mercado los jugadores "en venta"
                         if ("en venta".equals(jugador.getEstado())) {
                             listaAleatoria.add(jugador);
                         }
                     }
                 }
-
-                // Guardar en cache sólo jugadores en venta
-                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                SharedPreferences.Editor editor = prefs.edit();
-                StringBuilder sb = new StringBuilder();
-                for (Jugador j : listaAleatoria) {
-                    sb.append(j.getNombre()).append(",");
-                }
-                editor.putString(KEY_JUGADORES, sb.toString());
-                editor.putLong(KEY_TIMESTAMP, System.currentTimeMillis());
-                editor.apply();
-
                 adapter.notifyDataSetChanged();
+
+                // Actualizamos el timestamp global en mercado
+                mercadoRef.child("ultimaActualizacion").setValue(timestamp);
+
             }
 
             @Override
@@ -165,93 +191,34 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
-    // Mé to do para marcar jugador como comprado (propiedad)
     public void comprarJugador(final Jugador jugadorComprado) {
         if (jugadorComprado == null || jugadorComprado.getId() == null) return;
 
-        jugadorComprado.setEstado("propiedad"); // o el estado que quieras para indicar que el jugador está comprado
+        jugadorComprado.setEstado("propiedad");
 
         dbRef.child(jugadorComprado.getId()).setValue(jugadorComprado)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(MercadoActivity.this, "Jugador comprado con éxito", Toast.LENGTH_SHORT).show();
-                        // Quitar de la lista y actualizar vista
                         listaAleatoria.remove(jugadorComprado);
                         adapter.notifyDataSetChanged();
-
-                        // Actualizar cache para reflejar cambios
-                        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        StringBuilder sb = new StringBuilder();
-                        for (Jugador j : listaAleatoria) {
-                            sb.append(j.getNombre()).append(",");
-                        }
-                        editor.putString(KEY_JUGADORES, sb.toString());
-                        editor.apply();
                     } else {
                         Toast.makeText(MercadoActivity.this, "Error al comprar jugador", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void elegirJugadoresAleatorios() {
-        listaAleatoria.clear();
-
-        if (listaJugadores.size() <= 5) {
-            Set<String> nombresVistos = new HashSet<>();
-            for (Jugador j : listaJugadores) {
-                if (!nombresVistos.contains(j.getNombre())) {
-                    nombresVistos.add(j.getNombre());
-                    listaAleatoria.add(j);
-                }
-            }
-        } else {
-            Random random = new Random();
-            Set<Integer> indicesUsados = new HashSet<>();
-            while (listaAleatoria.size() < 5) {
-                int index = random.nextInt(listaJugadores.size());
-                Jugador candidato = listaJugadores.get(index);
-                if (!indicesUsados.contains(index) && !contieneJugadorPorNombre(listaAleatoria, candidato.getNombre())) {
-                    indicesUsados.add(index);
-                    listaAleatoria.add(candidato);
-                }
-            }
-        }
-
-        adapter.notifyDataSetChanged();
-    }
-
-    private boolean contieneJugadorPorNombre(List<Jugador> lista, String nombre) {
-        for (Jugador j : lista) {
-            if (j.getNombre().equals(nombre)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void cargarJugadoresDesdeCache() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String jugadoresNombres = prefs.getString(KEY_JUGADORES, "");
-        if (jugadoresNombres.isEmpty()) return;
-
-        String[] nombres = jugadoresNombres.split(",");
-        List<String> nombresLista = Arrays.asList(nombres);
-
         dbRef = FirebaseDatabase.getInstance().getReference("jugadores");
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaAleatoria.clear();
-                Set<String> nombresSet = new HashSet<>(nombresLista);
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
-                    if (jugador != null) {
+                    if (jugador != null && "en venta".equals(jugador.getEstado())) {
                         jugador.setId(ds.getKey());
-                        // Solo cargar jugadores que están en venta
-                        if (nombresSet.contains(jugador.getNombre()) && "en venta".equals(jugador.getEstado()) && !contieneJugadorPorNombre(listaAleatoria, jugador.getNombre())) {
-                            listaAleatoria.add(jugador);
-                        }
+                        listaAleatoria.add(jugador);
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -264,32 +231,27 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
-    private void actualizarTiempoRestante() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        long ultimaActualizacion = prefs.getLong(KEY_TIMESTAMP, 0);
-        long siguienteActualizacion = ultimaActualizacion + TIEMPO_ESPERA_MS;
-
+    private void actualizarTiempoRestante(long ultimaActualizacion) {
         updateTimerRunnable = new Runnable() {
             @Override
             public void run() {
                 long ahora = System.currentTimeMillis();
+                long siguienteActualizacion = ultimaActualizacion + TIEMPO_ESPERA_MS;
                 long restante = siguienteActualizacion - ahora;
 
                 if (restante <= 0) {
-                    textViewTiempoRestante.setText("¡Mercado actualizado!");
+                    // Actualizar mercado y timestamp
+                    actualizarMercadoYTimestamp(System.currentTimeMillis());
+                    actualizarTiempoRestante(System.currentTimeMillis());
                 } else {
-                    long horas = restante / (1000 * 60 * 60);
-                    long minutos = (restante / (1000 * 60)) % 60;
                     long segundos = (restante / 1000) % 60;
-
-                    String tiempoFormateado = String.format("Próxima actualización en: %02dh %02dm %02ds", horas, minutos, segundos);
+                    long minutos = (restante / 1000) / 60;
+                    String tiempoFormateado = String.format("Próxima actualización en: %02d:%02ds", minutos, segundos);
                     textViewTiempoRestante.setText(tiempoFormateado);
-
                     handler.postDelayed(this, 1000);
                 }
             }
         };
-
         handler.post(updateTimerRunnable);
     }
 
