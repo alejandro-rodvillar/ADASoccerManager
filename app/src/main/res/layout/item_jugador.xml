@@ -63,11 +63,24 @@
             android:textColor="#888888" />
     </LinearLayout>
 
-    <!-- Camiseta del equipo a la derecha -->
+    <!-- Camiseta del equipo -->
     <ImageView
         android:id="@+id/imgCamiseta"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_gravity="center_vertical"
         android:contentDescription="Camiseta del equipo" />
+
+    <!-- Botón Comprar a la derecha -->
+    <Button
+        android:id="@+id/buttonComprar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:backgroundTint="#78C649"
+        android:text="Comprar"
+        android:textAllCaps="false"
+        android:textColor="#3E4044" />
+
 </LinearLayout>

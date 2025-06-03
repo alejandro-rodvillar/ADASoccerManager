@@ -51,6 +51,7 @@
             android:layout_marginTop="16dp"
             android:backgroundTint="#77C448"
             android:text="Crear nueva liga"
+            android:textColor="#3E4044"
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"

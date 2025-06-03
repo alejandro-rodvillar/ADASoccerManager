@@ -45,7 +45,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Texto que aparece debajo de la imagen con el nombre guardado -->
         <TextView
             android:id="@+id/textViewNombreGuardado"
             android:layout_width="wrap_content"
@@ -57,7 +56,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Contenedor horizontal para EditText y botón a la derecha -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutNombreBoton"
             android:layout_width="0dp"
@@ -95,7 +93,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -119,6 +116,19 @@
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewNombreUsuario" />
+
+        <!-- 🔐 Botón para cambiar contraseña -->
+        <Button
+            android:id="@+id/buttonCambiarContrasena"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#78C649"
+            android:text="Cambiar contraseña"
+            android:textColor="#3E4044"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewCorreo" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"

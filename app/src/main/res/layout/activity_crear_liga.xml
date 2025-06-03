@@ -73,6 +73,7 @@
             android:layout_marginTop="32dp"
             android:backgroundTint="#76C247"
             android:text="Crear"
+            android:textColor="#3E4044"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"

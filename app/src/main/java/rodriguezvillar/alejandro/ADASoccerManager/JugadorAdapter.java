@@ -4,11 +4,16 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +22,11 @@ import java.util.Map;
 public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorViewHolder> {
 
     private final List<Jugador> listaJugadores;
+    private final boolean mostrarBotonComprar;
 
-    public JugadorAdapter(List<Jugador> listaJugadores) {
+    public JugadorAdapter(List<Jugador> listaJugadores, boolean mostrarBotonComprar) {
         this.listaJugadores = listaJugadores;
+        this.mostrarBotonComprar = mostrarBotonComprar;
     }
 
     // Mapa fijo: equipo → camiseta (todos los equipos tienen una)
@@ -66,14 +73,48 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
                 holder.tvEstado.setTextColor(Color.parseColor("#9C27B0")); // morado
                 break;
             default:
-                // En teoría no debería ocurrir porque solo usas estos estados
                 holder.tvEstado.setTextColor(Color.parseColor("#888888")); // gris por defecto
                 break;
         }
 
-        // Como todos los equipos tienen camiseta, no hay fallback
-        holder.imgCamiseta.setImageResource(camisetaPorEquipo.get(jugador.getEquipo()));
+        Integer camisetaRes = camisetaPorEquipo.get(jugador.getEquipo());
+        if (camisetaRes != null) {
+            holder.imgCamiseta.setImageResource(camisetaRes);
+        }
+
+        // Mostrar u ocultar botón Comprar
+        holder.btnComprar.setVisibility(mostrarBotonComprar ? View.VISIBLE : View.GONE);
+
+        if (mostrarBotonComprar) {
+            holder.btnComprar.setOnClickListener(v -> {
+                // Referencia Firebase al jugador
+                DatabaseReference jugadorRef = FirebaseDatabase.getInstance()
+                        .getReference("jugadores")
+                        .child(jugador.getId());
+
+                // Cambiar estado a "en propiedad"
+                jugadorRef.child("estado").setValue("en propiedad").addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Actualizar estado local
+                        jugador.setEstado("en propiedad");
+
+                        // Quitar jugador de la lista para que desaparezca del mercado
+                        listaJugadores.remove(position);
+
+                        // Notificar al adapter
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, listaJugadores.size());
+                    } else {
+                        // Error al actualizar Firebase
+                        Toast.makeText(holder.itemView.getContext(), "Error al comprar jugador", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+        } else {
+            holder.btnComprar.setOnClickListener(null);
+        }
     }
+
 
     @Override
     public int getItemCount() {
@@ -83,6 +124,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
     public static class JugadorViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvEquipo, tvPosicion, tvPrecio, tvPuntos, tvEstado;
         ImageView imgCamiseta;
+        Button btnComprar;
 
         public JugadorViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,6 +135,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
             tvPuntos = itemView.findViewById(R.id.tvPuntos);
             tvEstado = itemView.findViewById(R.id.tvEstadoJugador);
             imgCamiseta = itemView.findViewById(R.id.imgCamiseta);
+            btnComprar = itemView.findViewById(R.id.buttonComprar);
         }
     }
 }
