@@ -44,6 +44,7 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
     private List<Jugador> listaFiltrada = new ArrayList<>();
     private Set<String> jugadoresEnVenta = new HashSet<>();
 
+
     private DatabaseReference dbRef;
 
     @Override
@@ -66,7 +67,7 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
         tvSinResultados = findViewById(R.id.tvSinResultados);
         tvSinResultados.setVisibility(View.GONE);
 
-        adapter = new JugadorAdapter(listaFiltrada);
+        adapter = new JugadorAdapter(listaFiltrada, false);
         recyclerView.setAdapter(adapter);
 
         cargarJugadoresEnVenta();

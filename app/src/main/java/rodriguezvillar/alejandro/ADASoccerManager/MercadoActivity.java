@@ -107,7 +107,7 @@ public class MercadoActivity extends AppCompatActivity {
         textViewTiempoRestante = findViewById(R.id.textViewTiempoRestante);
 
         recyclerViewMercado.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new JugadorAdapter(listaAleatoria);
+        adapter = new JugadorAdapter(listaAleatoria, true);
         recyclerViewMercado.setAdapter(adapter);
 
         // COMPROBAR SI SE DEBE CARGAR NUEVA LISTA

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,9 +18,11 @@ import java.util.Map;
 public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorViewHolder> {
 
     private final List<Jugador> listaJugadores;
+    private final boolean mostrarBotonComprar;
 
-    public JugadorAdapter(List<Jugador> listaJugadores) {
+    public JugadorAdapter(List<Jugador> listaJugadores, boolean mostrarBotonComprar) {
         this.listaJugadores = listaJugadores;
+        this.mostrarBotonComprar = mostrarBotonComprar;
     }
 
     // Mapa fijo: equipo → camiseta (todos los equipos tienen una)
@@ -66,13 +69,14 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
                 holder.tvEstado.setTextColor(Color.parseColor("#9C27B0")); // morado
                 break;
             default:
-                // En teoría no debería ocurrir porque solo usas estos estados
                 holder.tvEstado.setTextColor(Color.parseColor("#888888")); // gris por defecto
                 break;
         }
 
-        // Como todos los equipos tienen camiseta, no hay fallback
         holder.imgCamiseta.setImageResource(camisetaPorEquipo.get(jugador.getEquipo()));
+
+        // Mostrar u ocultar botón Comprar
+        holder.btnComprar.setVisibility(mostrarBotonComprar ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -83,6 +87,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
     public static class JugadorViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvEquipo, tvPosicion, tvPrecio, tvPuntos, tvEstado;
         ImageView imgCamiseta;
+        Button btnComprar;
 
         public JugadorViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,6 +98,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
             tvPuntos = itemView.findViewById(R.id.tvPuntos);
             tvEstado = itemView.findViewById(R.id.tvEstadoJugador);
             imgCamiseta = itemView.findViewById(R.id.imgCamiseta);
+            btnComprar = itemView.findViewById(R.id.buttonComprar);
         }
     }
 }
