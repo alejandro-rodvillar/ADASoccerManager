@@ -7,9 +7,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,11 +77,44 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
                 break;
         }
 
-        holder.imgCamiseta.setImageResource(camisetaPorEquipo.get(jugador.getEquipo()));
+        Integer camisetaRes = camisetaPorEquipo.get(jugador.getEquipo());
+        if (camisetaRes != null) {
+            holder.imgCamiseta.setImageResource(camisetaRes);
+        }
 
         // Mostrar u ocultar botón Comprar
         holder.btnComprar.setVisibility(mostrarBotonComprar ? View.VISIBLE : View.GONE);
+
+        if (mostrarBotonComprar) {
+            holder.btnComprar.setOnClickListener(v -> {
+                // Referencia Firebase al jugador
+                DatabaseReference jugadorRef = FirebaseDatabase.getInstance()
+                        .getReference("jugadores")
+                        .child(jugador.getId());
+
+                // Cambiar estado a "en propiedad"
+                jugadorRef.child("estado").setValue("en propiedad").addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Actualizar estado local
+                        jugador.setEstado("en propiedad");
+
+                        // Quitar jugador de la lista para que desaparezca del mercado
+                        listaJugadores.remove(position);
+
+                        // Notificar al adapter
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, listaJugadores.size());
+                    } else {
+                        // Error al actualizar Firebase
+                        Toast.makeText(holder.itemView.getContext(), "Error al comprar jugador", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+        } else {
+            holder.btnComprar.setOnClickListener(null);
+        }
     }
+
 
     @Override
     public int getItemCount() {

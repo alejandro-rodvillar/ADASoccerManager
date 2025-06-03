@@ -130,29 +130,20 @@ public class MercadoActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaJugadores.clear();
+                listaAleatoria.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
                     if (jugador != null && jugador.getNombre() != null) {
-                        jugador.setId(ds.getKey());  // <- asignamos el id desde Firebase
+                        jugador.setId(ds.getKey());
                         listaJugadores.add(jugador);
+                        // Solo añadir al mercado los jugadores "en venta"
+                        if ("en venta".equals(jugador.getEstado())) {
+                            listaAleatoria.add(jugador);
+                        }
                     }
                 }
 
-                // Resetear todos a "disponible" y actualizar Firebase con claves correctas (usando id)
-                for (Jugador j : listaJugadores) {
-                    j.setEstado("disponible");
-                    dbRef.child(j.getId()).setValue(j);  // <- clave id, no nombre
-                }
-
-                elegirJugadoresAleatorios();
-
-                // Cambiar estado de los seleccionados a "en venta"
-                for (Jugador j : listaAleatoria) {
-                    j.setEstado("en venta");
-                    dbRef.child(j.getId()).setValue(j);  // <- clave id, no nombre
-                }
-
-                // Guardar en cache
+                // Guardar en cache sólo jugadores en venta
                 SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 StringBuilder sb = new StringBuilder();
@@ -171,6 +162,35 @@ public class MercadoActivity extends AppCompatActivity {
                 Toast.makeText(MercadoActivity.this, "Error al cargar jugadores", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // Mé to do para marcar jugador como comprado (propiedad)
+    public void comprarJugador(final Jugador jugadorComprado) {
+        if (jugadorComprado == null || jugadorComprado.getId() == null) return;
+
+        jugadorComprado.setEstado("propiedad"); // o el estado que quieras para indicar que el jugador está comprado
+
+        dbRef.child(jugadorComprado.getId()).setValue(jugadorComprado)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(MercadoActivity.this, "Jugador comprado con éxito", Toast.LENGTH_SHORT).show();
+                        // Quitar de la lista y actualizar vista
+                        listaAleatoria.remove(jugadorComprado);
+                        adapter.notifyDataSetChanged();
+
+                        // Actualizar cache para reflejar cambios
+                        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        StringBuilder sb = new StringBuilder();
+                        for (Jugador j : listaAleatoria) {
+                            sb.append(j.getNombre()).append(",");
+                        }
+                        editor.putString(KEY_JUGADORES, sb.toString());
+                        editor.apply();
+                    } else {
+                        Toast.makeText(MercadoActivity.this, "Error al comprar jugador", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void elegirJugadoresAleatorios() {
@@ -226,14 +246,10 @@ public class MercadoActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
                     if (jugador != null) {
-                        jugador.setId(ds.getKey()); // también aquí asignamos id
-                        if (nombresSet.contains(jugador.getNombre()) && !contieneJugadorPorNombre(listaAleatoria, jugador.getNombre())) {
-                            jugador.setEstado("en venta");
-                            dbRef.child(jugador.getId()).setValue(jugador);
+                        jugador.setId(ds.getKey());
+                        // Solo cargar jugadores que están en venta
+                        if (nombresSet.contains(jugador.getNombre()) && "en venta".equals(jugador.getEstado()) && !contieneJugadorPorNombre(listaAleatoria, jugador.getNombre())) {
                             listaAleatoria.add(jugador);
-                        } else {
-                            jugador.setEstado("disponible");
-                            dbRef.child(jugador.getId()).setValue(jugador);
                         }
                     }
                 }
