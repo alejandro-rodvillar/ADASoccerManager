@@ -25,10 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 public class MercadoActivity extends AppCompatActivity {
 
@@ -36,28 +34,24 @@ public class MercadoActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle;
     private RecyclerView recyclerViewMercado;
     private JugadorAdapter adapter;
-    private List<Jugador> listaJugadores = new ArrayList<>();
     private List<Jugador> listaAleatoria = new ArrayList<>();
     private DatabaseReference dbRef;
-    private DatabaseReference mercadoRef; // referencia a nodo mercado
+    private DatabaseReference mercadoRef;
     private TextView textViewTiempoRestante;
 
     private Handler handler = new Handler();
     private Runnable updateTimerRunnable;
 
-    // Cambiado a 2 minutos (120.000 ms)
-    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 2 minutos
+    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mercado);
 
-        // TOOLBAR
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // DRAWER + TOGGLE
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
@@ -77,7 +71,6 @@ public class MercadoActivity extends AppCompatActivity {
             return true;
         });
 
-        // BOTTOM NAVIGATION
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_market);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -98,7 +91,6 @@ public class MercadoActivity extends AppCompatActivity {
             return false;
         });
 
-        // VIEWS
         recyclerViewMercado = findViewById(R.id.recyclerViewMercado);
         textViewTiempoRestante = findViewById(R.id.textViewTiempoRestante);
 
@@ -108,9 +100,7 @@ public class MercadoActivity extends AppCompatActivity {
 
         mercadoRef = FirebaseDatabase.getInstance().getReference("mercado");
 
-        // Asegurar que el nodo ultimaActualizacion existe, y luego continuar
         inicializarUltimaActualizacion(() -> {
-            // Ahora que ultimaActualizacion existe, procedemos con la carga
             mercadoRef.child("ultimaActualizacion").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -138,16 +128,13 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
-    // Método que crea el nodo mercado/ultimaActualizacion si no existe
     private void inicializarUltimaActualizacion(Runnable onComplete) {
         mercadoRef.child("ultimaActualizacion").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     mercadoRef.child("ultimaActualizacion").setValue(System.currentTimeMillis())
-                            .addOnCompleteListener(task -> {
-                                onComplete.run();
-                            });
+                            .addOnCompleteListener(task -> onComplete.run());
                 } else {
                     onComplete.run();
                 }
@@ -165,28 +152,41 @@ public class MercadoActivity extends AppCompatActivity {
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listaJugadores.clear();
+                List<Jugador> disponibles = new ArrayList<>();
                 listaAleatoria.clear();
+
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Jugador jugador = ds.getValue(Jugador.class);
                     if (jugador != null && jugador.getNombre() != null) {
                         jugador.setId(ds.getKey());
-                        listaJugadores.add(jugador);
+
                         if ("en venta".equals(jugador.getEstado())) {
-                            listaAleatoria.add(jugador);
+                            jugador.setEstado("disponible");
+                            dbRef.child(jugador.getId()).setValue(jugador);
+                        }
+
+                        if ("disponible".equals(jugador.getEstado())) {
+                            disponibles.add(jugador);
                         }
                     }
                 }
+
+                Collections.shuffle(disponibles);
+                List<Jugador> seleccionados = disponibles.subList(0, Math.min(5, disponibles.size()));
+
+                for (Jugador jugador : seleccionados) {
+                    jugador.setEstado("en venta");
+                    dbRef.child(jugador.getId()).setValue(jugador);
+                    listaAleatoria.add(jugador);
+                }
+
                 adapter.notifyDataSetChanged();
-
-                // Actualizamos el timestamp global en mercado
                 mercadoRef.child("ultimaActualizacion").setValue(timestamp);
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MercadoActivity.this, "Error al cargar jugadores", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MercadoActivity.this, "Error al actualizar mercado", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -240,7 +240,6 @@ public class MercadoActivity extends AppCompatActivity {
                 long restante = siguienteActualizacion - ahora;
 
                 if (restante <= 0) {
-                    // Actualizar mercado y timestamp
                     actualizarMercadoYTimestamp(System.currentTimeMillis());
                     actualizarTiempoRestante(System.currentTimeMillis());
                 } else {
