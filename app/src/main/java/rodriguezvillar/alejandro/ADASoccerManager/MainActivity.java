@@ -64,7 +64,10 @@ public class MainActivity extends AppCompatActivity {
     // Comprobación de si el usuario pertenece a una liga para mostrar botón
     private void comprobarSiPerteneceALiga(Button btnManageLeague) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser == null) return;
+        if (currentUser == null) {
+            btnManageLeague.setVisibility(View.GONE);
+            return;
+        }
 
         String uid = currentUser.getUid();
 
@@ -74,17 +77,22 @@ public class MainActivity extends AppCompatActivity {
                 boolean pertenece = false;
 
                 for (DataSnapshot ligaSnapshot : snapshot.getChildren()) {
-                    DataSnapshot miembrosSnapshot = ligaSnapshot.child("miembros");
+                    DataSnapshot jugadoresSnapshot = ligaSnapshot.child("jugadores");
 
-                    if (miembrosSnapshot.hasChild(uid)) {
-                        pertenece = true;
-                        break;
+                    if (jugadoresSnapshot.hasChild(uid)) {
+                        Boolean perteneceBool = jugadoresSnapshot.child(uid).getValue(Boolean.class);
+                        if (perteneceBool != null && perteneceBool) {
+                            pertenece = true;
+                            break;
+                        }
                     }
                 }
 
                 if (pertenece) {
+                    Log.d(TAG, "Usuario pertenece a una liga. Mostrando botón.");
                     btnManageLeague.setVisibility(View.VISIBLE);
                 } else {
+                    Log.d(TAG, "Usuario NO pertenece a ninguna liga. Ocultando botón.");
                     btnManageLeague.setVisibility(View.GONE);
                 }
             }
@@ -97,10 +105,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.black));
         }
@@ -115,11 +125,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Botón gestionar liga
         Button btnManageLeague = findViewById(R.id.btnManageLeague);
+        btnManageLeague.setVisibility(View.GONE); // Oculto por defecto al iniciar
         btnManageLeague.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, GestionLigaActivity.class));
         });
 
-        // Mostrar solo si pertenece a alguna liga
+        // Mostrar botón gestionar liga solo si pertenece a alguna liga
         comprobarSiPerteneceALiga(btnManageLeague);
 
         // Menú superior
