@@ -2,7 +2,6 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,9 +14,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,6 @@ public class CrearLigaActivity extends AppCompatActivity {
 
     // UI y Firebase
     private DrawerLayout drawerLayout;
-    private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
     private EditText etLeagueName, etParticipants;
 
@@ -40,9 +40,8 @@ public class CrearLigaActivity extends AppCompatActivity {
         etLeagueName = findViewById(R.id.etLeagueName);
         etParticipants = findViewById(R.id.etParticipants);
 
-        // Obtiene el usuario actual y la instancia de Firestore
+        // Obtiene el usuario actual
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        firestore = FirebaseFirestore.getInstance();
 
         // Asocia el botón de crear liga con la función crearLiga()
         findViewById(R.id.btnSubmit).setOnClickListener(v -> crearLiga());
@@ -133,49 +132,56 @@ public class CrearLigaActivity extends AppCompatActivity {
             return;
         }
 
-        // Referencia al documento del usuario en Firestore
         String uid = currentUser.getUid();
-        DocumentReference userRef = firestore.collection("usuarios").document(uid);
 
-        // Verifica si el usuario ya tiene una liga asignada
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists() && documentSnapshot.contains("ligaId")) {
-                Toast.makeText(this, "Ya perteneces a una liga. Solo puedes unirte o crear una.", Toast.LENGTH_LONG).show();
-            } else {
-                // Genera un ID aleatorio para la nueva liga
-                String ligaId = UUID.randomUUID().toString().substring(0, 8);
-                DocumentReference ligaRef = firestore.collection("ligas").document(ligaId);
+        // Referencia al nodo del usuario en Realtime Database
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
 
-                // Datos de la liga que se van a guardar
-                Map<String, Object> ligaData = new HashMap<>();
-                ligaData.put("nombre", leagueName);
-                ligaData.put("maxParticipantes", participants);
-                ligaData.put("creador", uid);
-                ligaData.put("ligaId", ligaId);
+        // Verifica si el usuario ya tiene una liga asignada en Realtime Database
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChild("ligaId")) {
+                    Toast.makeText(CrearLigaActivity.this, "Ya perteneces a una liga. Solo puedes unirte o crear una.", Toast.LENGTH_LONG).show();
+                } else {
+                    // Genera un ID aleatorio para la nueva liga
+                    String ligaId = UUID.randomUUID().toString().substring(0, 8);
+                    DatabaseReference ligasRef = FirebaseDatabase.getInstance().getReference("ligas").child(ligaId);
 
-                // Agrega al usuario actual como primer jugador
-                Map<String, Boolean> jugadores = new HashMap<>();
-                jugadores.put(uid, true);
-                ligaData.put("jugadores", jugadores);
+                    // Datos de la liga que se van a guardar
+                    Map<String, Object> ligaData = new HashMap<>();
+                    ligaData.put("nombre", leagueName);
+                    ligaData.put("maxParticipantes", participants);
+                    ligaData.put("creador", uid);
+                    ligaData.put("ligaId", ligaId);
 
-                // Guarda la liga en Firestore
-                ligaRef.set(ligaData).addOnSuccessListener(unused -> {
-                    // Añade el ID de la liga al documento del usuario
-                    userRef.set(Map.of("ligaId", ligaId), SetOptions.merge());
+                    // Agrega al usuario actual como primer jugador
+                    Map<String, Boolean> jugadores = new HashMap<>();
+                    jugadores.put(uid, true);
+                    ligaData.put("jugadores", jugadores);
 
-                    Toast.makeText(this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
-                    etLeagueName.setText("");
-                    etParticipants.setText("");
+                    // Guarda la liga en Realtime Database
+                    ligasRef.setValue(ligaData).addOnSuccessListener(unused -> {
+                        // Añade el ID de la liga al nodo del usuario en Realtime Database
+                        userRef.child("ligaId").setValue(ligaId);
 
-                    // Navega a pantalla principal
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al crear la liga: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                        Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
+                        etLeagueName.setText("");
+                        etParticipants.setText("");
+
+                        // Navega a pantalla principal
+                        startActivity(new Intent(CrearLigaActivity.this, MainActivity.class));
+                        finish();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(CrearLigaActivity.this, "Error al crear la liga: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
             }
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Error al comprobar usuario: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(CrearLigaActivity.this, "Error al comprobar usuario: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

@@ -9,13 +9,17 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ReestablecerContrasena extends AppCompatActivity {
 
     private EditText etCorreo1, etCorreo2;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private DatabaseReference usuariosRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +32,7 @@ public class ReestablecerContrasena extends AppCompatActivity {
         Button btnVolver = findViewById(R.id.volverlogin);
 
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        usuariosRef = FirebaseDatabase.getInstance().getReference("usuarios");
 
         btnAceptar.setOnClickListener(v -> {
             String correo1 = etCorreo1.getText().toString().trim().toLowerCase();
@@ -44,31 +48,41 @@ public class ReestablecerContrasena extends AppCompatActivity {
                 return;
             }
 
-            // Buscar en Firestore por el campo "email"
-            db.collection("usuarios")
-                    .whereEqualTo("email", correo1)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            // Email encontrado en Firestore, enviamos correo de recuperación
-                            mAuth.sendPasswordResetEmail(correo1)
-                                    .addOnCompleteListener(resetTask -> {
-                                        if (resetTask.isSuccessful()) {
-                                            Toast.makeText(this, "Correo de recuperación enviado", Toast.LENGTH_LONG).show();
-                                            startActivity(new Intent(this, LoginActivity.class));
-                                            finish();
-                                        } else {
-                                            Toast.makeText(this, "Error al enviar: " + resetTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        } else {
-                            // Email no encontrado
-                            Toast.makeText(this, "Ese correo no está registrado", Toast.LENGTH_SHORT).show();
+            // Buscar en Realtime Database por el campo "email"
+            usuariosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    boolean encontrado = false;
+
+                    for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                        String email = userSnapshot.child("email").getValue(String.class);
+                        if (email != null && email.equalsIgnoreCase(correo1)) {
+                            encontrado = true;
+                            break;
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error de conexión: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                    }
+
+                    if (encontrado) {
+                        mAuth.sendPasswordResetEmail(correo1)
+                                .addOnCompleteListener(resetTask -> {
+                                    if (resetTask.isSuccessful()) {
+                                        Toast.makeText(ReestablecerContrasena.this, "Correo de recuperación enviado", Toast.LENGTH_LONG).show();
+                                        startActivity(new Intent(ReestablecerContrasena.this, LoginActivity.class));
+                                        finish();
+                                    } else {
+                                        Toast.makeText(ReestablecerContrasena.this, "Error al enviar: " + resetTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(ReestablecerContrasena.this, "Ese correo no está registrado", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Toast.makeText(ReestablecerContrasena.this, "Error de conexión: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         btnVolver.setOnClickListener(v -> {

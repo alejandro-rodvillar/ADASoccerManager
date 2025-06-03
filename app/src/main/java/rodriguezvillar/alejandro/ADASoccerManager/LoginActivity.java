@@ -14,18 +14,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.*;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private DatabaseReference usuariosRef;
     private EditText etIdentificador, etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        usuariosRef = FirebaseDatabase.getInstance().getReference("usuarios");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -76,20 +76,26 @@ public class LoginActivity extends AppCompatActivity {
                 // Es un correo
                 iniciarSesion(identificador, pass);
             } else {
-                // Es un nombre de usuario
-                db.collection("usuarios")
-                        .whereEqualTo("nombre", identificador)
-                        .get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            if (!queryDocumentSnapshots.isEmpty()) {
-                                String correo = queryDocumentSnapshots.getDocuments().get(0).getString("email");
-                                iniciarSesion(correo, pass);
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
+                // Es un nombre de usuario, buscar en Realtime DB
+                usuariosRef.orderByChild("nombre").equalTo(identificador)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                if (snapshot.exists()) {
+                                    for (DataSnapshot child : snapshot.getChildren()) {
+                                        String correo = child.child("email").getValue(String.class);
+                                        iniciarSesion(correo, pass);
+                                        break;
+                                    }
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "Usuario no encontrado", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(LoginActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                Toast.makeText(LoginActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         });
             }
         });

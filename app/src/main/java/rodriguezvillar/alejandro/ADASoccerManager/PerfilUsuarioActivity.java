@@ -17,8 +17,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class PerfilUsuarioActivity extends AppCompatActivity {
 
@@ -28,10 +31,10 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     private EditText editTextNombre;
     private Button buttonGuardarNombre;
 
-    private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    private DatabaseReference databaseReference;
 
-    private boolean estaEditando = false; // Empieza bloqueado, botón dice "Editar"
+    private boolean estaEditando = false;
 
     private SharedPreferences sharedPreferences;
 
@@ -50,41 +53,38 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
-        db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         if (currentUser != null) {
             textViewCorreo.setText("Correo: " + currentUser.getEmail());
 
-            // Mostrar nombre de usuario desde Firestore para referencia (no se actualiza)
-            db.collection("usuarios").document(currentUser.getUid()).get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document != null && document.exists()) {
-                                String nombreRegistrado = document.getString("nombre");
-                                if (nombreRegistrado != null && !nombreRegistrado.isEmpty()) {
-                                    textViewNombreUsuario.setText("Nombre de usuario: " + nombreRegistrado);
-                                } else {
-                                    textViewNombreUsuario.setText("Nombre de usuario: no disponible");
-                                }
-                            } else {
-                                textViewNombreUsuario.setText("Nombre de usuario: no disponible");
-                            }
-                        } else {
-                            Toast.makeText(PerfilUsuarioActivity.this, "Error al obtener usuario", Toast.LENGTH_SHORT).show();
-                            textViewNombreUsuario.setText("Nombre de usuario: no disponible");
-                        }
-                    });
+            // Mostrar nombre de usuario desde Realtime Database
+            DatabaseReference usuarioRef = databaseReference.child("usuarios").child(currentUser.getUid()).child("nombre");
+            usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    String nombreRegistrado = snapshot.getValue(String.class);
+                    if (nombreRegistrado != null && !nombreRegistrado.isEmpty()) {
+                        textViewNombreUsuario.setText("Nombre de usuario: " + nombreRegistrado);
+                    } else {
+                        textViewNombreUsuario.setText("Nombre de usuario: no disponible");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Toast.makeText(PerfilUsuarioActivity.this, "Error al obtener nombre", Toast.LENGTH_SHORT).show();
+                    textViewNombreUsuario.setText("Nombre de usuario: no disponible");
+                }
+            });
         } else {
             textViewCorreo.setText("Correo: no disponible");
             textViewNombreUsuario.setText("Nombre de usuario: no disponible");
         }
 
-        // Crear una key única para cada usuario para guardar su nombre localmente
         String keyNombreUsuario = currentUser != null ? "nombreGuardado_" + currentUser.getUid() : null;
 
-        // Cargar el nombre guardado localmente para este usuario
         String nombreGuardadoLocal = "";
         if (keyNombreUsuario != null) {
             nombreGuardadoLocal = sharedPreferences.getString(keyNombreUsuario, "");
@@ -92,14 +92,11 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         textViewNombreGuardado.setText(nombreGuardadoLocal);
         editTextNombre.setText(nombreGuardadoLocal);
 
-        // Estado inicial según si hay nombre guardado o no
         if (nombreGuardadoLocal.isEmpty()) {
-            // No hay nombre guardado, permitir editar y botón "Guardar"
             editTextNombre.setEnabled(true);
             buttonGuardarNombre.setText("Guardar");
             estaEditando = true;
         } else {
-            // Hay nombre guardado, bloqueado y botón "Editar"
             editTextNombre.setEnabled(false);
             buttonGuardarNombre.setText("Editar");
             estaEditando = false;
@@ -109,7 +106,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         buttonGuardarNombre.setOnClickListener(v -> {
             if (estaEditando) {
-                // Guardar nombre en SharedPreferences
                 String nombreNuevo = editTextNombre.getText().toString().trim();
 
                 if (nombreNuevo.isEmpty()) {
@@ -122,25 +118,28 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                 }
 
                 if (keyNombreUsuario != null) {
-                    // Guardar en SharedPreferences usando la key del usuario actual
                     sharedPreferences.edit().putString(keyNombreUsuario, nombreNuevo).apply();
                 }
 
-                // Mostrar en UI
-                textViewNombreGuardado.setText(nombreNuevo);
+                // Guardar en Realtime Database
+                if (currentUser != null) {
+                    DatabaseReference usuarioRef = databaseReference.child("usuarios").child(currentUser.getUid());
+                    usuarioRef.child("nombre").setValue(nombreNuevo)
+                            .addOnSuccessListener(aVoid -> Toast.makeText(this, "Nombre actualizado correctamente", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar nombre en Firebase", Toast.LENGTH_SHORT).show());
 
-                // Bloquear edición y cambiar texto botón
+                    // Actualizar textViewNombreUsuario también en UI
+                    textViewNombreUsuario.setText("Nombre de usuario: " + nombreNuevo);
+                }
+
+                textViewNombreGuardado.setText(nombreNuevo);
                 editTextNombre.setEnabled(false);
                 buttonGuardarNombre.setText("Editar");
                 estaEditando = false;
 
-                Toast.makeText(PerfilUsuarioActivity.this, "Nombre guardado", Toast.LENGTH_SHORT).show();
             } else {
-                // Permitir edición
                 editTextNombre.setEnabled(true);
                 editTextNombre.requestFocus();
-
-                // Cambiar botón a "Guardar"
                 buttonGuardarNombre.setText("Guardar");
                 estaEditando = true;
             }

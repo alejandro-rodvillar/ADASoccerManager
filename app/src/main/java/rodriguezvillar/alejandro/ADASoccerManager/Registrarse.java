@@ -1,6 +1,5 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
-
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -15,16 +14,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import android.graphics.Paint;
-import android.widget.TextView;
+// Firebase Realtime Database
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Registrarse extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private EditText etEmail, etPassword, etNombre;
-    private FirebaseFirestore db;
     private static final String TAG = "RegistroFirebase";
+    private DatabaseReference mDatabase;
     CheckBox checkBox;
     Button btnRegistrarse;
     Button btnVolver;
@@ -34,8 +33,9 @@ public class Registrarse extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registrarse);
 
-        db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference(); // Referencia a Realtime DB
+
         etNombre = findViewById(R.id.nomregis);
         etEmail = findViewById(R.id.correoregis);
         etPassword = findViewById(R.id.contraregis);
@@ -51,13 +51,10 @@ public class Registrarse extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnVolver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Registrarse.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        btnVolver.setOnClickListener(v -> {
+            Intent intent = new Intent(Registrarse.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
@@ -85,6 +82,7 @@ public class Registrarse extends AppCompatActivity {
             Toast.makeText(Registrarse.this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show();
             return;
         }
+
         mAuth.createUserWithEmailAndPassword(correo, pass)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -92,22 +90,19 @@ public class Registrarse extends AppCompatActivity {
                         if (user != null) {
                             String uid = user.getUid();
 
-                            // Se utiliza la clase Usuario
+                            // Crear objeto Usuario
                             Usuario usuario = new Usuario(nombreUsuario, correo);
 
-                            db.collection("usuarios").document(uid)
-                                    .set(usuario)
+                            // Guardar en Realtime Database en lugar de Firestore
+                            mDatabase.child("usuarios").child(uid).setValue(usuario)
                                     .addOnSuccessListener(aVoid -> {
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(Registrarse.this, LoginActivity.class);
-                                        startActivity(intent);
-                                        finish();
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(this, "Error al guardar datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     });
 
-                            // Se redirige a la primera página después del registro
+                            // Enviar verificación por correo
                             user.sendEmailVerification()
                                     .addOnCompleteListener(verificationTask -> {
                                         if (verificationTask.isSuccessful()) {
@@ -116,24 +111,15 @@ public class Registrarse extends AppCompatActivity {
                                             Toast.makeText(this, "No se pudo enviar el correo de verificación.", Toast.LENGTH_SHORT).show();
                                         }
 
-                                        // Después de enviar el correo, redirige al login
+                                        // Redirigir a login
                                         Intent intent = new Intent(Registrarse.this, LoginActivity.class);
                                         startActivity(intent);
                                         finish();
                                     });
-
                         }
                     } else {
                         Toast.makeText(this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-        });
+                });
     }
-
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(Registrarse.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
-    }*/
 }
