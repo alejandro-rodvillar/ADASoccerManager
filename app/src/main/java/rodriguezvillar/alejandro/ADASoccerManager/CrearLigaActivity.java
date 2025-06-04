@@ -120,67 +120,73 @@ public class CrearLigaActivity extends AppCompatActivity {
             return;
         }
 
-        // Verifica que el número esté entre 2 y 5
         if (participants < 2 || participants > 5) {
             etParticipants.setError("Debe ser entre 2 y 5 participantes");
             return;
         }
 
-        // Verifica que haya un usuario autenticado
         if (currentUser == null) {
             Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String uid = currentUser.getUid();
-
-        // Referencia al nodo del usuario en Realtime Database
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
+        DatabaseReference ligasRefRoot = FirebaseDatabase.getInstance().getReference("ligas");
 
-        // Verifica si el usuario ya tiene una liga asignada en Realtime Database
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Paso 1: comprobar si ya existe alguna liga
+        ligasRefRoot.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists() && snapshot.hasChild("ligaId")) {
-                    Toast.makeText(CrearLigaActivity.this, "Ya perteneces a una liga. Solo puedes unirte o crear una.", Toast.LENGTH_LONG).show();
-                } else {
-                    // Genera un ID aleatorio para la nueva liga
-                    String ligaId = UUID.randomUUID().toString().substring(0, 8);
-                    DatabaseReference ligasRef = FirebaseDatabase.getInstance().getReference("ligas").child(ligaId);
-
-                    // Datos de la liga que se van a guardar
-                    Map<String, Object> ligaData = new HashMap<>();
-                    ligaData.put("nombre", leagueName);
-                    ligaData.put("maxParticipantes", participants);
-                    ligaData.put("creador", uid);
-                    ligaData.put("ligaId", ligaId);
-
-                    // Agrega al usuario actual como primer jugador
-                    Map<String, Boolean> jugadores = new HashMap<>();
-                    jugadores.put(uid, true);
-                    ligaData.put("jugadores", jugadores);
-
-                    // Guarda la liga en Realtime Database
-                    ligasRef.setValue(ligaData).addOnSuccessListener(unused -> {
-                        // Añade el ID de la liga al nodo del usuario en Realtime Database
-                        userRef.child("ligaId").setValue(ligaId);
-
-                        Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
-                        etLeagueName.setText("");
-                        etParticipants.setText("");
-
-                        // Navega a pantalla principal
-                        startActivity(new Intent(CrearLigaActivity.this, MainActivity.class));
-                        finish();
-                    }).addOnFailureListener(e -> {
-                        Toast.makeText(CrearLigaActivity.this, "Error al crear la liga: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            public void onDataChange(DataSnapshot ligasSnapshot) {
+                if (ligasSnapshot.exists()) {
+                    Toast.makeText(CrearLigaActivity.this, "Ya existe una liga. Solo puedes unirte mediante código.", Toast.LENGTH_LONG).show();
+                    return;
                 }
+
+                // Paso 2: comprobar si el usuario ya pertenece a una liga
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot userSnapshot) {
+                        if (userSnapshot.exists() && userSnapshot.hasChild("ligaId")) {
+                            Toast.makeText(CrearLigaActivity.this, "Ya perteneces a una liga. No puedes crear otra.", Toast.LENGTH_LONG).show();
+                        } else {
+                            // Paso 3: crear la liga
+                            String ligaId = UUID.randomUUID().toString().substring(0, 8);
+                            DatabaseReference nuevaLigaRef = ligasRefRoot.child(ligaId);
+
+                            Map<String, Object> ligaData = new HashMap<>();
+                            ligaData.put("nombre", leagueName);
+                            ligaData.put("maxParticipantes", participants);
+                            ligaData.put("creador", uid);
+                            ligaData.put("ligaId", ligaId);
+
+                            Map<String, Boolean> jugadores = new HashMap<>();
+                            jugadores.put(uid, true);
+                            ligaData.put("jugadores", jugadores);
+
+                            nuevaLigaRef.setValue(ligaData).addOnSuccessListener(unused -> {
+                                userRef.child("ligaId").setValue(ligaId);
+                                Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
+                                etLeagueName.setText("");
+                                etParticipants.setText("");
+                                startActivity(new Intent(CrearLigaActivity.this, MainActivity.class));
+                                finish();
+                            }).addOnFailureListener(e -> {
+                                Toast.makeText(CrearLigaActivity.this, "Error al crear la liga: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        Toast.makeText(CrearLigaActivity.this, "Error al comprobar usuario: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Toast.makeText(CrearLigaActivity.this, "Error al comprobar usuario: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CrearLigaActivity.this, "Error al verificar ligas: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
