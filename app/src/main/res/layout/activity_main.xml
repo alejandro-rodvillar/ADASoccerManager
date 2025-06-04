@@ -50,7 +50,7 @@
             android:layout_height="49dp"
             android:layout_marginTop="16dp"
             android:backgroundTint="#77C448"
-            android:text="Crear nueva liga"
+            android:text="Crear nueva Liga"
             android:textColor="#3E4044"
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
             app:layout_constraintEnd_toEndOf="parent"
@@ -58,6 +58,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvWelcome"
             app:layout_constraintVertical_bias="0.077" />
+
+        <Button
+            android:id="@+id/btnJoinLeague"
+            android:layout_width="234dp"
+            android:layout_height="49dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#77C448"
+            android:text="Unirse a Liga"
+            android:textColor="#3E4044"
+            app:layout_constraintTop_toBottomOf="@id/btnCreateLeague"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497" />
+
 
         <Button
             android:id="@+id/btnManageLeague"
@@ -71,9 +85,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-            app:layout_constraintVertical_bias="0.252"
+            app:layout_constraintTop_toBottomOf="@id/btnJoinLeague"
+            app:layout_constraintVertical_bias="0.0"
             android:visibility="gone"/>
+
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"

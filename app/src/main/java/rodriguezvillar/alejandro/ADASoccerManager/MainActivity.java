@@ -61,11 +61,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Comprobación de si el usuario pertenece a una liga para mostrar botón
-    private void comprobarSiPerteneceALiga(Button btnManageLeague) {
+    // Comprobación de si el usuario pertenece a una liga
+    private void comprobarSiPerteneceALiga(Button btnManageLeague, Button btnJoinLeague) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             btnManageLeague.setVisibility(View.GONE);
+            btnJoinLeague.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -89,11 +90,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (pertenece) {
-                    Log.d(TAG, "Usuario pertenece a una liga. Mostrando botón.");
+                    Log.d(TAG, "Usuario pertenece a una liga.");
                     btnManageLeague.setVisibility(View.VISIBLE);
+                    btnJoinLeague.setVisibility(View.GONE);
                 } else {
-                    Log.d(TAG, "Usuario NO pertenece a ninguna liga. Ocultando botón.");
+                    Log.d(TAG, "Usuario NO pertenece a una liga.");
                     btnManageLeague.setVisibility(View.GONE);
+                    btnJoinLeague.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -101,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "Error al comprobar liga: " + error.getMessage());
                 btnManageLeague.setVisibility(View.GONE);
+                btnJoinLeague.setVisibility(View.VISIBLE);
             }
         });
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,13 +128,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Botón gestionar liga
         Button btnManageLeague = findViewById(R.id.btnManageLeague);
-        btnManageLeague.setVisibility(View.GONE); // Oculto por defecto al iniciar
+        btnManageLeague.setVisibility(View.GONE);
         btnManageLeague.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, GestionLigaActivity.class));
         });
 
-        // Mostrar botón gestionar liga solo si pertenece a alguna liga
-        comprobarSiPerteneceALiga(btnManageLeague);
+        // Botón unirse a liga
+        Button btnJoinLeague = findViewById(R.id.btnJoinLeague);
+        btnJoinLeague.setVisibility(View.GONE);
+        btnJoinLeague.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, UnirseLiga.class));
+        });
+
+        // Mostrar botón correspondiente según estado del usuario
+        comprobarSiPerteneceALiga(btnManageLeague, btnJoinLeague);
 
         // Menú superior
         Toolbar toolbar = findViewById(R.id.toolbar);
