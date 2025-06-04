@@ -42,7 +42,7 @@ public class MercadoActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Runnable updateTimerRunnable;
 
-    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000;
+    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 2 minutos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +108,6 @@ public class MercadoActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         ultimaActualizacion = snapshot.getValue(Long.class);
                     }
-
                     actualizarTiempoRestante(ultimaActualizacion);
                     cargarJugadoresDesdeCache();
                 }
@@ -168,17 +167,20 @@ public class MercadoActivity extends AppCompatActivity {
                 Collections.shuffle(disponibles);
                 List<Jugador> seleccionados = disponibles.subList(0, Math.min(5, disponibles.size()));
 
+                List<String> idsEnVenta = new ArrayList<>();
                 for (Jugador jugador : seleccionados) {
                     jugador.setEstado("en venta");
                     dbRef.child(jugador.getId()).setValue(jugador);
+                    idsEnVenta.add(jugador.getId());
                 }
 
-                mercadoRef.child("ultimaActualizacion").setValue(timestamp)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                cargarJugadoresDesdeCache(); // Refrescar inmediatamente
-                            }
-                        });
+                // Guardar timestamp y lista de jugadores en venta en mercado
+                mercadoRef.child("ultimaActualizacion").setValue(timestamp);
+                mercadoRef.child("jugadoresEnVenta").setValue(idsEnVenta).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        cargarJugadoresDesdeCache(); // Refrescar inmediatamente
+                    }
+                });
             }
 
             @Override
@@ -206,25 +208,42 @@ public class MercadoActivity extends AppCompatActivity {
     }
 
     private void cargarJugadoresDesdeCache() {
-        dbRef = FirebaseDatabase.getInstance().getReference("jugadores");
-        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                listaAleatoria.clear();
-                int count = 0;
-
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    if (count >= 5) break;
-
-                    Jugador jugador = ds.getValue(Jugador.class);
-                    if (jugador != null && "en venta".equals(jugador.getEstado())) {
-                        jugador.setId(ds.getKey());
-                        listaAleatoria.add(jugador);
-                        count++;
+                List<String> idsEnVenta = new ArrayList<>();
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        idsEnVenta.add(ds.getValue(String.class));
                     }
                 }
+                if (idsEnVenta.isEmpty()) {
+                    listaAleatoria.clear();
+                    adapter.notifyDataSetChanged();
+                    return;
+                }
 
-                adapter.notifyDataSetChanged();
+                dbRef = FirebaseDatabase.getInstance().getReference("jugadores");
+                dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshotJugadores) {
+                        listaAleatoria.clear();
+                        for (String id : idsEnVenta) {
+                            DataSnapshot jugadorSnap = snapshotJugadores.child(id);
+                            Jugador jugador = jugadorSnap.getValue(Jugador.class);
+                            if (jugador != null) {
+                                jugador.setId(id);
+                                listaAleatoria.add(jugador);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(MercadoActivity.this, "Error al cargar jugadores en caché", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -234,19 +253,33 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
-
-    private void actualizarTiempoRestante(long ultimaActualizacion) {
+    private void actualizarTiempoRestante(long ultimaActualizacionLocal) {
         updateTimerRunnable = new Runnable() {
             @Override
             public void run() {
                 long ahora = System.currentTimeMillis();
-                long siguienteActualizacion = ultimaActualizacion + TIEMPO_ESPERA_MS;
+                long siguienteActualizacion = ultimaActualizacionLocal + TIEMPO_ESPERA_MS;
                 long restante = siguienteActualizacion - ahora;
 
                 if (restante <= 0) {
-                    long nuevoTimestamp = siguienteActualizacion + TIEMPO_ESPERA_MS;
-                    actualizarMercadoYTimestamp(siguienteActualizacion);
-                    actualizarTiempoRestante(siguienteActualizacion);
+                    mercadoRef.child("ultimaActualizacion").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            long ultimaActualizacionReal = snapshot.exists() ? snapshot.getValue(Long.class) : 0;
+                            if (ultimaActualizacionReal <= ultimaActualizacionLocal) {
+                                long nuevoTimestamp = ahora;
+                                actualizarMercadoYTimestamp(nuevoTimestamp);
+                                actualizarTiempoRestante(nuevoTimestamp);
+                            } else {
+                                actualizarTiempoRestante(ultimaActualizacionReal);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            actualizarTiempoRestante(ultimaActualizacionLocal);
+                        }
+                    });
                 } else {
                     long segundos = (restante / 1000) % 60;
                     long minutos = (restante / 1000) / 60;
