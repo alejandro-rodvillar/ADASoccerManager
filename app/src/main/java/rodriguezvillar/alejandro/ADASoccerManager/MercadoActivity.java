@@ -43,7 +43,7 @@ public class MercadoActivity extends AppCompatActivity {
     private Runnable updateTimerRunnable;
 
     // Cambiado a 10 minutos:
-    private static final long TIEMPO_ESPERA_MS = 10 * 60 * 1000; // 10 minutos
+    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 10 minutos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
