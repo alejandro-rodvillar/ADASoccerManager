@@ -182,6 +182,8 @@ public class GestionLigaActivity extends AppCompatActivity {
         mDatabase.child("usuarios").child(userId).child("ligaId").removeValue()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        //eliminar puntos
+                        mDatabase.child("usuarios").child(userId).child("puntos").removeValue();
                         //eliminar monedas de DB
                         mDatabase.child("usuarios").child(userId).child("monedas").removeValue();
                         // Eliminar usuario de la lista de jugadores en la liga
@@ -215,6 +217,7 @@ public class GestionLigaActivity extends AppCompatActivity {
                     final int[] eliminados = {0};
                     for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
                         String jugadorId = jugadorSnap.getKey();
+                        mDatabase.child("usuarios").child(jugadorId).child("puntos").removeValue();
                         mDatabase.child("usuarios").child(jugadorId).child("monedas").removeValue();
                         mDatabase.child("usuarios").child(jugadorId).child("ligaId").removeValue()
                                 .addOnCompleteListener(task -> {

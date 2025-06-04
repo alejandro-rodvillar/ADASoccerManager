@@ -95,12 +95,14 @@ public class UnirseLiga extends AppCompatActivity {
                             dbRef.child("ligas").child(ligaKey).child("jugadores").child(uid).setValue(true)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
-                                            // Añadir ligaId y monedas al usuario
+                                            // Añadir ligaId
                                             DatabaseReference usuarioRef = dbRef.child("usuarios").child(uid);
                                             usuarioRef.child("ligaId").setValue(codigoLiga)
                                                     .addOnCompleteListener(task2 -> {
                                                         if (task2.isSuccessful()) {
-                                                            // NUEVO: Añadir monedas al usuario
+                                                            // añadir puntos
+                                                            usuarioRef.child("puntos").setValue(0);
+                                                            //Añadir monedas al usuario
                                                             usuarioRef.child("monedas").setValue(1000)
                                                                     .addOnCompleteListener(task3 -> {
                                                                         if (task3.isSuccessful()) {
