@@ -95,12 +95,21 @@ public class UnirseLiga extends AppCompatActivity {
                             dbRef.child("ligas").child(ligaKey).child("jugadores").child(uid).setValue(true)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
-                                            // Vincular la liga al usuario
-                                            dbRef.child("usuarios").child(uid).child("ligaId").setValue(codigoLiga)
+                                            // Añadir ligaId y monedas al usuario
+                                            DatabaseReference usuarioRef = dbRef.child("usuarios").child(uid);
+                                            usuarioRef.child("ligaId").setValue(codigoLiga)
                                                     .addOnCompleteListener(task2 -> {
                                                         if (task2.isSuccessful()) {
-                                                            Toast.makeText(UnirseLiga.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();
-                                                            finish(); // Puedes redirigir a otra actividad si quieres
+                                                            // NUEVO: Añadir monedas al usuario
+                                                            usuarioRef.child("monedas").setValue(1000)
+                                                                    .addOnCompleteListener(task3 -> {
+                                                                        if (task3.isSuccessful()) {
+                                                                            Toast.makeText(UnirseLiga.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();
+                                                                            finish(); // Redirigir si lo deseas
+                                                                        } else {
+                                                                            Toast.makeText(UnirseLiga.this, "Error al asignar monedas al usuario", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
                                                         } else {
                                                             Toast.makeText(UnirseLiga.this, "Error al vincular la liga al usuario", Toast.LENGTH_SHORT).show();
                                                         }
@@ -109,6 +118,7 @@ public class UnirseLiga extends AppCompatActivity {
                                             Toast.makeText(UnirseLiga.this, "Error al añadirte a la liga", Toast.LENGTH_SHORT).show();
                                         }
                                     });
+
 
                             break; // Ya hemos encontrado la liga
                         }
