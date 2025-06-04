@@ -1,11 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".UnirseLiga">
+    android:layout_height="match_parent">
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
+  <!-- Contenido principal -->
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <!-- Toolbar superior -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#77C448"
+        android:title="Unirse a una Liga"
+        android:titleTextColor="@android:color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <!-- Zona central con formulario -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="24dp">
+
+      <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/tvJoinLeague"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Introduce el código de la liga"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/etLeagueCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@color/white"
+            android:hint="Código de la liga"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLength="8"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnJoinLeague"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Unirse a la liga"
+            android:backgroundTint="#77C448"
+            android:textColor="#3E4044" />
+      </LinearLayout>
+    </ScrollView>
+
+    <!-- Menú inferior -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#77C448"
+        app:menu="@menu/bottom_nav_menu" />
+  </LinearLayout>
+
+  <!-- Menú lateral -->
+  <com.google.android.material.navigation.NavigationView
+      android:id="@+id/navigationView"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_gravity="start"
+      android:backgroundTint="#FCF5FD"
+      app:headerLayout="@layout/header_layout"
+      app:menu="@menu/drawer_menu" />
+</androidx.drawerlayout.widget.DrawerLayout>
