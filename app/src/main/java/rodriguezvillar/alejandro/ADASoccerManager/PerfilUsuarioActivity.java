@@ -59,14 +59,14 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         if (currentUser != null) {
             textViewCorreo.setText("Correo: " + currentUser.getEmail());
 
-            // Mostrar nombre de usuario desde Realtime Database
+            // Mostrar nombre real desde Firebase (no editable)
             DatabaseReference usuarioRef = databaseReference.child("usuarios").child(currentUser.getUid()).child("nombre");
             usuarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    String nombreRegistrado = snapshot.getValue(String.class);
-                    if (nombreRegistrado != null && !nombreRegistrado.isEmpty()) {
-                        textViewNombreUsuario.setText("Nombre de usuario: " + nombreRegistrado);
+                    String nombreReal = snapshot.getValue(String.class);
+                    if (nombreReal != null && !nombreReal.isEmpty()) {
+                        textViewNombreUsuario.setText("Nombre de usuario: " + nombreReal);
                     } else {
                         textViewNombreUsuario.setText("Nombre de usuario: no disponible");
                     }
@@ -121,16 +121,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     sharedPreferences.edit().putString(keyNombreUsuario, nombreNuevo).apply();
                 }
 
-                // Guardar en Realtime Database
-                if (currentUser != null) {
-                    DatabaseReference usuarioRef = databaseReference.child("usuarios").child(currentUser.getUid());
-                    usuarioRef.child("nombre").setValue(nombreNuevo)
-                            .addOnSuccessListener(aVoid -> Toast.makeText(this, "Nombre actualizado correctamente", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar nombre en Firebase", Toast.LENGTH_SHORT).show());
-
-                    // Actualizar textViewNombreUsuario también en UI
-                    textViewNombreUsuario.setText("Nombre de usuario: " + nombreNuevo);
-                }
+                Toast.makeText(this, "Nombre mostrado actualizado", Toast.LENGTH_SHORT).show();
 
                 textViewNombreGuardado.setText(nombreNuevo);
                 editTextNombre.setEnabled(false);
