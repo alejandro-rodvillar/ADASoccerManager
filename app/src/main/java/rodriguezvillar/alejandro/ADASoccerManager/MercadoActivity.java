@@ -108,15 +108,9 @@ public class MercadoActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         ultimaActualizacion = snapshot.getValue(Long.class);
                     }
-                    long ahora = System.currentTimeMillis();
-
-                    if (ahora - ultimaActualizacion >= TIEMPO_ESPERA_MS) {
-                        actualizarMercadoYTimestamp(ahora);
-                    } else {
-                        cargarJugadoresDesdeCache();
-                    }
 
                     actualizarTiempoRestante(ultimaActualizacion);
+                    cargarJugadoresDesdeCache();
                 }
 
                 @Override
@@ -177,11 +171,14 @@ public class MercadoActivity extends AppCompatActivity {
                 for (Jugador jugador : seleccionados) {
                     jugador.setEstado("en venta");
                     dbRef.child(jugador.getId()).setValue(jugador);
-                    listaAleatoria.add(jugador);
                 }
 
-                adapter.notifyDataSetChanged();
-                mercadoRef.child("ultimaActualizacion").setValue(timestamp);
+                mercadoRef.child("ultimaActualizacion").setValue(timestamp)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                cargarJugadoresDesdeCache(); // Refrescar inmediatamente
+                            }
+                        });
             }
 
             @Override
@@ -214,13 +211,19 @@ public class MercadoActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaAleatoria.clear();
+                int count = 0;
+
                 for (DataSnapshot ds : snapshot.getChildren()) {
+                    if (count >= 5) break;
+
                     Jugador jugador = ds.getValue(Jugador.class);
                     if (jugador != null && "en venta".equals(jugador.getEstado())) {
                         jugador.setId(ds.getKey());
                         listaAleatoria.add(jugador);
+                        count++;
                     }
                 }
+
                 adapter.notifyDataSetChanged();
             }
 
@@ -231,6 +234,7 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
+
     private void actualizarTiempoRestante(long ultimaActualizacion) {
         updateTimerRunnable = new Runnable() {
             @Override
@@ -240,8 +244,9 @@ public class MercadoActivity extends AppCompatActivity {
                 long restante = siguienteActualizacion - ahora;
 
                 if (restante <= 0) {
-                    actualizarMercadoYTimestamp(System.currentTimeMillis());
-                    actualizarTiempoRestante(System.currentTimeMillis());
+                    long nuevoTimestamp = siguienteActualizacion + TIEMPO_ESPERA_MS;
+                    actualizarMercadoYTimestamp(siguienteActualizacion);
+                    actualizarTiempoRestante(siguienteActualizacion);
                 } else {
                     long segundos = (restante / 1000) % 60;
                     long minutos = (restante / 1000) / 60;
