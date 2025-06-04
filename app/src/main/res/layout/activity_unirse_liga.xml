@@ -21,47 +21,57 @@
         android:titleTextColor="@android:color/white"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <!-- Zona central con formulario -->
+    <!-- Zona central con formulario centrado -->
     <ScrollView
+        android:fillViewport="true"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="24dp">
 
+      <!-- Envoltura añadida para centrar verticalmente -->
       <LinearLayout
-          android:orientation="vertical"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:gravity="center_horizontal">
+          android:layout_height="match_parent"
+          android:orientation="vertical"
+          android:gravity="center">
 
-        <TextView
-            android:id="@+id/tvJoinLeague"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Introduce el código de la liga"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/etLeagueCode"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:background="@color/white"
-            android:hint="Código de la liga"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:maxLength="8"
-            android:padding="12dp" />
+            android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/btnJoinLeague"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Unirse a la liga"
-            android:backgroundTint="#77C448"
-            android:textColor="#3E4044" />
+          <TextView
+              android:id="@+id/tvJoinLeague"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Introduce el código de la liga"
+              android:textSize="18sp"
+              android:textStyle="bold"
+              android:layout_marginBottom="16dp" />
+
+          <EditText
+              android:id="@+id/etLeagueCode"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="24dp"
+              android:background="@color/white"
+              android:hint="Código de la liga"
+              android:importantForAutofill="no"
+              android:inputType="text"
+              android:maxLength="8"
+              android:padding="12dp" />
+
+          <Button
+              android:id="@+id/btnJoinLeague"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="Unirse a la liga"
+              android:backgroundTint="#77C448"
+              android:textColor="#3E4044" />
+        </LinearLayout>
       </LinearLayout>
     </ScrollView>
 
