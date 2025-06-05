@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,12 +39,12 @@ public class MercadoActivity extends AppCompatActivity {
     private DatabaseReference dbRef;
     private DatabaseReference mercadoRef;
     private TextView textViewTiempoRestante;
+    private TextView textViewMonedas;
 
     private Handler handler = new Handler();
     private Runnable updateTimerRunnable;
 
-    // Cambiado a 10 minutos:
-    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 10 minutos
+    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 2 minutos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,12 +95,15 @@ public class MercadoActivity extends AppCompatActivity {
 
         recyclerViewMercado = findViewById(R.id.recyclerViewMercado);
         textViewTiempoRestante = findViewById(R.id.textViewTiempoRestante);
+        textViewMonedas = findViewById(R.id.textViewMonedas);
 
         recyclerViewMercado.setLayoutManager(new LinearLayoutManager(this));
         adapter = new JugadorAdapter(listaAleatoria, true);
         recyclerViewMercado.setAdapter(adapter);
 
         mercadoRef = FirebaseDatabase.getInstance().getReference("mercado");
+
+        cargarMonedasUsuario();
 
         inicializarUltimaActualizacion(() -> {
             mercadoRef.child("ultimaActualizacion").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -119,6 +123,30 @@ public class MercadoActivity extends AppCompatActivity {
                     cargarJugadoresDesdeCache();
                 }
             });
+        });
+    }
+
+    private ValueEventListener monedasListener;
+
+    private void cargarMonedasUsuario() {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
+
+        monedasListener = userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChild("monedas")) {
+                    Long monedas = snapshot.child("monedas").getValue(Long.class);
+                    textViewMonedas.setText("Monedas: " + monedas);
+                } else {
+                    textViewMonedas.setText("Aún no perteneces a una liga");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                textViewMonedas.setText("Error al cargar monedas");
+            }
         });
     }
 
@@ -175,11 +203,10 @@ public class MercadoActivity extends AppCompatActivity {
                     idsEnVenta.add(jugador.getId());
                 }
 
-                // Guardar timestamp y lista de jugadores en venta en mercado
                 mercadoRef.child("ultimaActualizacion").setValue(timestamp);
                 mercadoRef.child("jugadoresEnVenta").setValue(idsEnVenta).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        cargarJugadoresDesdeCache(); // Refrescar inmediatamente
+                        cargarJugadoresDesdeCache();
                     }
                 });
             }
@@ -191,22 +218,74 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
+
     public void comprarJugador(final Jugador jugadorComprado) {
         if (jugadorComprado == null || jugadorComprado.getId() == null) return;
 
-        jugadorComprado.setEstado("propiedad");
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
 
-        dbRef.child(jugadorComprado.getId()).setValue(jugadorComprado)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(MercadoActivity.this, "Jugador comprado con éxito", Toast.LENGTH_SHORT).show();
-                        listaAleatoria.remove(jugadorComprado);
-                        adapter.notifyDataSetChanged();
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String nombreUsuario = snapshot.child("nombre").getValue(String.class);
+                    Long monedas = snapshot.child("monedas").getValue(Long.class);
+                    if (monedas != null && monedas >= jugadorComprado.getPrecio()) {
+                        // Restar monedas
+                        long nuevasMonedas = monedas - jugadorComprado.getPrecio();
+                        userRef.child("monedas").setValue(nuevasMonedas);
+
+                        // Cambiar estado del jugador y asignar propietario por nombre
+                        jugadorComprado.setEstado("en propiedad de " + nombreUsuario);
+                        jugadorComprado.setPropietarioNombre(nombreUsuario);
+
+                        dbRef.child(jugadorComprado.getId()).setValue(jugadorComprado)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(MercadoActivity.this, "Jugador comprado con éxito", Toast.LENGTH_SHORT).show();
+
+                                        // Quitar jugador del listado y actualizar adapter para que desaparezca del mercado
+                                        listaAleatoria.remove(jugadorComprado);
+                                        adapter.notifyDataSetChanged();
+
+                                        // También actualizar la lista de jugadores en venta para que no siga apareciendo
+                                        mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                List<String> idsEnVenta = new ArrayList<>();
+                                                for (DataSnapshot ds : snapshot.getChildren()) {
+                                                    String id = ds.getValue(String.class);
+                                                    if (id != null && !id.equals(jugadorComprado.getId())) {
+                                                        idsEnVenta.add(id);
+                                                    }
+                                                }
+                                                mercadoRef.child("jugadoresEnVenta").setValue(idsEnVenta);
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                // Aquí podrías manejar un posible error si quieres
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(MercadoActivity.this, "Error al comprar jugador", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     } else {
-                        Toast.makeText(MercadoActivity.this, "Error al comprar jugador", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MercadoActivity.this, "No tienes monedas suficientes", Toast.LENGTH_SHORT).show();
                     }
-                });
+                } else {
+                    Toast.makeText(MercadoActivity.this, "No se pudo obtener la información del usuario", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MercadoActivity.this, "Error al comprobar monedas", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
 
     private void cargarJugadoresDesdeCache() {
         mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {

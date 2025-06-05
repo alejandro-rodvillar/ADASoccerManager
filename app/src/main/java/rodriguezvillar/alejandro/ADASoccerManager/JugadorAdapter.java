@@ -87,34 +87,17 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
 
         if (mostrarBotonComprar) {
             holder.btnComprar.setOnClickListener(v -> {
-                // Referencia Firebase al jugador
-                DatabaseReference jugadorRef = FirebaseDatabase.getInstance()
-                        .getReference("jugadores")
-                        .child(jugador.getId());
-
-                // Cambiar estado a "en propiedad"
-                jugadorRef.child("estado").setValue("en propiedad").addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Actualizar estado local
-                        jugador.setEstado("en propiedad");
-
-                        // Quitar jugador de la lista para que desaparezca del mercado
-                        listaJugadores.remove(position);
-
-                        // Notificar al adapter
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, listaJugadores.size());
-                    } else {
-                        // Error al actualizar Firebase
-                        Toast.makeText(holder.itemView.getContext(), "Error al comprar jugador", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                // Llamar a comprarJugador del contexto si es MercadoActivity
+                if (holder.itemView.getContext() instanceof MercadoActivity) {
+                    ((MercadoActivity) holder.itemView.getContext()).comprarJugador(jugador);
+                } else {
+                    Toast.makeText(holder.itemView.getContext(), "No se puede comprar aquí", Toast.LENGTH_SHORT).show();
+                }
             });
         } else {
             holder.btnComprar.setOnClickListener(null);
         }
     }
-
 
     @Override
     public int getItemCount() {
