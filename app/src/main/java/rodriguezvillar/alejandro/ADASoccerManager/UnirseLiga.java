@@ -12,6 +12,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class UnirseLiga extends AppCompatActivity {
 
     private EditText etLeagueCode;
@@ -90,6 +93,7 @@ public class UnirseLiga extends AppCompatActivity {
                             }
 
                             String uid = currentUser.getUid();
+                            String teamId = UUID.randomUUID().toString().substring(0, 8);
 
                             // Añadir el usuario a la liga
                             dbRef.child("ligas").child(ligaKey).child("jugadores").child(uid).setValue(true)
@@ -100,6 +104,8 @@ public class UnirseLiga extends AppCompatActivity {
                                             usuarioRef.child("ligaId").setValue(codigoLiga)
                                                     .addOnCompleteListener(task2 -> {
                                                         if (task2.isSuccessful()) {
+                                                            //generar equipo
+                                                            usuarioRef.child("equipo").setValue(teamId);
                                                             // añadir puntos
                                                             usuarioRef.child("puntos").setValue(0);
                                                             //Añadir monedas al usuario

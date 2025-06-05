@@ -150,8 +150,10 @@ public class CrearLigaActivity extends AppCompatActivity {
                         if (userSnapshot.exists() && userSnapshot.hasChild("ligaId")) {
                             Toast.makeText(CrearLigaActivity.this, "Ya perteneces a una liga. No puedes crear otra.", Toast.LENGTH_LONG).show();
                         } else {
-                            // Paso 3: crear la liga
+                            // crear la liga
                             String ligaId = UUID.randomUUID().toString().substring(0, 8);
+                            // generar un ID aleatorio corto para teamId
+                            String teamId = UUID.randomUUID().toString().substring(0, 8);
                             DatabaseReference nuevaLigaRef = ligasRefRoot.child(ligaId);
 
                             Map<String, Object> ligaData = new HashMap<>();
@@ -168,6 +170,7 @@ public class CrearLigaActivity extends AppCompatActivity {
                                 userRef.child("ligaId").setValue(ligaId);
                                 userRef.child("monedas").setValue(1000);
                                 userRef.child("puntos").setValue(0);
+                                userRef.child("equipo").setValue(teamId);
                                 Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
                                 etLeagueName.setText("");
                                 etParticipants.setText("");
