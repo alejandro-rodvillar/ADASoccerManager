@@ -123,9 +123,19 @@ public class GestionLigaActivity extends AppCompatActivity {
         // Eliminar liga
         btnEliminarLiga.setOnClickListener(v -> {
             if (ligaIdActual != null) {
-                eliminarLiga(ligaIdActual);
+                new android.app.AlertDialog.Builder(GestionLigaActivity.this)
+                        .setTitle("Confirmar eliminación")
+                        .setMessage("¿Estás seguro de que quieres eliminar esta liga? Esta acción no se puede deshacer.")
+                        .setPositiveButton("Eliminar", (dialog, which) -> {
+                            eliminarLiga(ligaIdActual);
+                        })
+                        .setNegativeButton("Cancelar", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
             }
         });
+
 
         // Toolbar y menú lateral
         Toolbar toolbar = findViewById(R.id.toolbar);
