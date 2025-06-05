@@ -109,7 +109,7 @@ public class UnirseLiga extends AppCompatActivity {
                                                             // añadir puntos
                                                             usuarioRef.child("puntos").setValue(0);
                                                             //Añadir monedas al usuario
-                                                            usuarioRef.child("monedas").setValue(1000)
+                                                            usuarioRef.child("monedas").setValue(100000)
                                                                     .addOnCompleteListener(task3 -> {
                                                                         if (task3.isSuccessful()) {
                                                                             Toast.makeText(UnirseLiga.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();

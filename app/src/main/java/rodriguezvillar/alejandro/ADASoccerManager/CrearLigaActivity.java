@@ -168,7 +168,7 @@ public class CrearLigaActivity extends AppCompatActivity {
 
                             nuevaLigaRef.setValue(ligaData).addOnSuccessListener(unused -> {
                                 userRef.child("ligaId").setValue(ligaId);
-                                userRef.child("monedas").setValue(1000);
+                                userRef.child("monedas").setValue(100000);
                                 userRef.child("puntos").setValue(0);
                                 userRef.child("equipo").setValue(teamId);
                                 Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
