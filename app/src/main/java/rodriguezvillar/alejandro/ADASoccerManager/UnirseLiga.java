@@ -4,24 +4,34 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.*;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
-public class UnirseLiga extends AppCompatActivity {
+public class UnirseLiga extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private EditText etLeagueCode;
     private Button btnJoinLeague;
     private DatabaseReference dbRef;
     private FirebaseUser currentUser;
-    private static final String TAG = "UnirseLiga";
 
-    // Añadido BottomNavigationView
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
     private BottomNavigationView bottomNavigation;
+
+    private static final String TAG = "UnirseLiga";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +43,25 @@ public class UnirseLiga extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Inicializar BottomNavigationView
-        bottomNavigation = findViewById(R.id.bottomNavigation);
+        // Configurar Toolbar
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        // Listener para seleccionar menú
+        // Configurar Navigation Drawer
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, 0, 0);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Configurar Bottom Navigation
+        bottomNavigation = findViewById(R.id.bottomNavigation);
         bottomNavigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
-                Toast.makeText(UnirseLiga.this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(UnirseLiga.this, MainActivity.class));
                 return true;
             } else if (id == R.id.nav_leagues) {
                 startActivity(new Intent(UnirseLiga.this, LigasActivity.class));
@@ -55,6 +76,7 @@ public class UnirseLiga extends AppCompatActivity {
             return false;
         });
 
+        // Botón para unirse a la liga
         btnJoinLeague.setOnClickListener(v -> {
             String codigoLiga = etLeagueCode.getText().toString().trim();
 
@@ -91,23 +113,19 @@ public class UnirseLiga extends AppCompatActivity {
 
                             String uid = currentUser.getUid();
 
-                            // Añadir el usuario a la liga
                             dbRef.child("ligas").child(ligaKey).child("jugadores").child(uid).setValue(true)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
-                                            // Añadir ligaId
                                             DatabaseReference usuarioRef = dbRef.child("usuarios").child(uid);
                                             usuarioRef.child("ligaId").setValue(codigoLiga)
                                                     .addOnCompleteListener(task2 -> {
                                                         if (task2.isSuccessful()) {
-                                                            // añadir puntos
                                                             usuarioRef.child("puntos").setValue(0);
-                                                            //Añadir monedas al usuario
                                                             usuarioRef.child("monedas").setValue(1000)
                                                                     .addOnCompleteListener(task3 -> {
                                                                         if (task3.isSuccessful()) {
                                                                             Toast.makeText(UnirseLiga.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();
-                                                                            finish(); // Redirigir si lo deseas
+                                                                            finish();
                                                                         } else {
                                                                             Toast.makeText(UnirseLiga.this, "Error al asignar monedas al usuario", Toast.LENGTH_SHORT).show();
                                                                         }
@@ -121,8 +139,7 @@ public class UnirseLiga extends AppCompatActivity {
                                         }
                                     });
 
-
-                            break; // Ya hemos encontrado la liga
+                            break;
                         }
                     }
 
@@ -132,5 +149,33 @@ public class UnirseLiga extends AppCompatActivity {
                         Toast.makeText(UnirseLiga.this, "Error al conectar con la base de datos", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        drawerLayout.closeDrawer(GravityCompat.START);
+
+        if (id == R.id.nav_profile) {
+            startActivity(new Intent(this, PerfilUsuarioActivity.class));
+        } else if (id == R.id.nav_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.nav_logout) {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
