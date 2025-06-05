@@ -1,59 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".LigasActivity">
+    android:layout_height="match_parent">
 
-    <!-- Contenedor principal de la pantalla -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- CONTENIDO PRINCIPAL -->
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
+        <!-- Toolbar superior -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#78C649"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="ADA Soccer Manager" />
+            android:background="#77C448"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-        <!-- ListView para mostrar las ligas -->
-        <ListView
-            android:id="@+id/leagueListView"
+        <!-- CONTENIDO SCROLLABLE -->
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:layout_constraintBottom_toTopOf="@id/bottomNavigation" />
+            android:layout_weight="1"
+            android:fillViewport="true">
 
-        <!-- Bottom Navigation -->
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Texto si no pertenece a ninguna liga -->
+                <TextView
+                    android:id="@+id/noLeagueTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="¿Aún no formas parte de una liga? Elige entre crear o unirte a una ya existente."
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:visibility="gone" />
+
+                <!-- Botón para ir a MainActivity -->
+                <Button
+                    android:id="@+id/joinOrCreateButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Crear o unirse a liga"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+
+                <!-- Lista de jugadores en la liga -->
+                <ListView
+                    android:id="@+id/leagueListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="1dp"
+                    android:visibility="gone"
+                    android:paddingTop="16dp" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Menú inferior -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#78C649"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:background="#77C448"
+            android:layout_gravity="bottom"
             app:menu="@menu/bottom_nav_menu" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
-    <!-- NavigationView (menú lateral) -->
+    <!-- Menú lateral -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"
-        app:headerLayout="@layout/header_layout" />
+        android:backgroundTint="#FCF5FD"
+        app:headerLayout="@layout/header_layout"
+        app:menu="@menu/drawer_menu" />
+
 </androidx.drawerlayout.widget.DrawerLayout>
-
-
