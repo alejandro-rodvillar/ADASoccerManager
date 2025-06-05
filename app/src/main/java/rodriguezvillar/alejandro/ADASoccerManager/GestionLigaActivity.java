@@ -229,7 +229,8 @@ public class GestionLigaActivity extends AppCompatActivity {
                     final int[] eliminados = {0};
                     for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
                         String jugadorId = jugadorSnap.getKey();
-                        mDatabase.child("usuarios").child(jugadorId).child("equipo").removeValue();
+                        //mDatabase.child("jugadores").child()
+                        mDatabase.child("usuarios").child(jugadorId).child("equipoUsuario").removeValue();
                         mDatabase.child("usuarios").child(jugadorId).child("puntos").removeValue();
                         mDatabase.child("usuarios").child(jugadorId).child("monedas").removeValue();
                         mDatabase.child("usuarios").child(jugadorId).child("ligaId").removeValue()

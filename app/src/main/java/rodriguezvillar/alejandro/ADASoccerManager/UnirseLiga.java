@@ -105,7 +105,7 @@ public class UnirseLiga extends AppCompatActivity {
                                                     .addOnCompleteListener(task2 -> {
                                                         if (task2.isSuccessful()) {
                                                             //generar equipo
-                                                            usuarioRef.child("equipo").setValue(teamId);
+                                                            usuarioRef.child("equipoUsuario").setValue(teamId);
                                                             // añadir puntos
                                                             usuarioRef.child("puntos").setValue(0);
                                                             //Añadir monedas al usuario
