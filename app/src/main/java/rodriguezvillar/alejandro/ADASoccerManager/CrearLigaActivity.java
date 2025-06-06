@@ -63,8 +63,6 @@ public class CrearLigaActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(this, PerfilUsuarioActivity.class));
-            } else if (id == R.id.nav_settings) {
-                startActivity(new Intent(this, SettingsActivity.class));
             } else if (id == R.id.nav_logout) {
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();

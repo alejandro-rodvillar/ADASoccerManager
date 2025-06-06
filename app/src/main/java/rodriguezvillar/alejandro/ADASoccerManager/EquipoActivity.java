@@ -45,8 +45,6 @@ public class EquipoActivity extends AppCompatActivity {
 
                 if (id == R.id.nav_profile) {
                     startActivity(new Intent(EquipoActivity.this, PerfilUsuarioActivity.class));
-                } else if (id == R.id.nav_settings) {
-                    startActivity(new Intent(EquipoActivity.this, SettingsActivity.class));
                 } else if (id == R.id.nav_logout) {
                     // Aquí se inicia la actividad Login cuando se cierra sesión
                     Intent intent = new Intent(EquipoActivity.this, LoginActivity.class);

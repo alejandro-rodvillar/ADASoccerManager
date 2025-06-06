@@ -161,8 +161,6 @@ public class MainActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(MainActivity.this, PerfilUsuarioActivity.class));
-            } else if (id == R.id.nav_settings) {
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             } else if (id == R.id.nav_logout) {
                 SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();

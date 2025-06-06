@@ -203,9 +203,8 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
             if (id == R.id.nav_profile) {
                 Toast.makeText(PerfilUsuarioActivity.this, "Ya estás en Perfil", Toast.LENGTH_SHORT).show();
-            } else if (id == R.id.nav_settings) {
-                startActivity(new Intent(PerfilUsuarioActivity.this, SettingsActivity.class));
-            } else if (id == R.id.nav_logout) {
+            }
+            else if (id == R.id.nav_logout) {
                 startActivity(new Intent(PerfilUsuarioActivity.this, LoginActivity.class));
             }
             drawerLayout.closeDrawers();

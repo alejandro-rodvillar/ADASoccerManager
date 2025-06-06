@@ -59,8 +59,6 @@ public class SettingsActivity extends AppCompatActivity {
 
                 if (id == R.id.nav_profile) {
                     startActivity(new Intent(SettingsActivity.this, PerfilUsuarioActivity.class));
-                } else if (id == R.id.nav_settings) {
-                    Toast.makeText(SettingsActivity.this, "Ya estás en Configuración", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.nav_logout) {
                     // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
                     Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
