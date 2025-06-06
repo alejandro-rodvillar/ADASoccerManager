@@ -178,15 +178,22 @@ public class GestionLigaActivity extends AppCompatActivity {
     }
 
     private void salirDeLiga(String ligaId, String userId) {
-        // Restaurar estado de los jugadores del usuario a "disponible"
-        mDatabase.child("jugadores").orderByChild("propietarioNombre").equalTo(currentUser.getDisplayName())
+        // Acceder al equipo del usuario (equipoUsuario)
+        mDatabase.child("usuarios").child(userId).child("equipoUsuario")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
-                            jugadorSnap.getRef().child("estado").setValue("disponible");
+                    public void onDataChange(@NonNull DataSnapshot equipoSnapshot) {
+                        if (equipoSnapshot.exists()) {
+                            for (DataSnapshot jugadorIdSnap : equipoSnapshot.getChildren()) {
+                                String jugadorId = jugadorIdSnap.getKey();
+
+                                // Cambiar estado del jugador a "disponible" y limpiar propietario
+                                mDatabase.child("jugadores").child(jugadorId).child("estado").setValue("disponible");
+                                mDatabase.child("jugadores").child(jugadorId).child("propietarioNombre").removeValue();
+                            }
                         }
 
+                        // Borrar datos del usuario relacionados con la liga
                         mDatabase.child("usuarios").child(userId).child("ligaId").removeValue().addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 mDatabase.child("usuarios").child(userId).child("puntos").removeValue();
@@ -210,10 +217,11 @@ public class GestionLigaActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(GestionLigaActivity.this, "Error accediendo a jugadores", Toast.LENGTH_LONG).show();
+                        Toast.makeText(GestionLigaActivity.this, "Error accediendo al equipo del usuario", Toast.LENGTH_LONG).show();
                     }
                 });
     }
+
 
     private void eliminarLiga(String ligaId) {
         mDatabase.child("ligas").child(ligaId).child("jugadores").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -265,7 +273,6 @@ public class GestionLigaActivity extends AppCompatActivity {
                 final int[] actualizados = {0};
                 for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
                     jugadorSnap.getRef().child("estado").setValue("disponible");
-                    jugadorSnap.getRef().child("propietarioNombre").removeValue();
                     actualizados[0]++;
                     if (actualizados[0] == total) {
                         onComplete.run();
