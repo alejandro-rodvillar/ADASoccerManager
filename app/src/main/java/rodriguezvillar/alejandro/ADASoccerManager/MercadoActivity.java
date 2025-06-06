@@ -256,7 +256,6 @@ public class MercadoActivity extends AppCompatActivity {
                         }
 
                         currentJugador.setEstado("en propiedad de " + nombreUsuario);
-                        //currentJugador.setPropietarioNombre(nombreUsuario);
                         currentData.setValue(currentJugador);
                         return Transaction.success(currentData);
                     }
@@ -271,6 +270,9 @@ public class MercadoActivity extends AppCompatActivity {
 
                         // Restar monedas
                         userRef.child("monedas").setValue(monedas - jugadorComprado.getPrecio());
+
+                        // 🔧 Actualizar el estado del objeto local
+                        jugadorComprado.setEstado("en propiedad de " + nombreUsuario);
 
                         // Añadir jugador al equipo del usuario
                         userRef.child("equipoUsuario").child(jugadorComprado.getId()).setValue(jugadorComprado);
@@ -306,6 +308,7 @@ public class MercadoActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 
