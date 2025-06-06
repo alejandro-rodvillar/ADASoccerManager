@@ -228,7 +228,6 @@ public class MercadoActivity extends AppCompatActivity {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
 
-        // Obtener nombre del usuario primero
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -268,12 +267,15 @@ public class MercadoActivity extends AppCompatActivity {
                     public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                         if (!committed) {
                             Toast.makeText(MercadoActivity.this, "El jugador acaba de ser comprado", Toast.LENGTH_SHORT).show();
-                            cargarJugadoresDesdeCache(); // Refrescar lista
+                            cargarJugadoresDesdeCache();
                             return;
                         }
 
                         // Restar monedas
                         userRef.child("monedas").setValue(monedas - jugadorComprado.getPrecio());
+
+                        // Añadir jugador al equipo del usuario
+                        userRef.child("equipoUsuario").child(jugadorComprado.getId()).setValue(jugadorComprado);
 
                         // Remover jugador del mercado
                         mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -306,6 +308,7 @@ public class MercadoActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 
