@@ -258,7 +258,7 @@ public class MercadoActivity extends AppCompatActivity {
                         }
 
                         currentJugador.setEstado("en propiedad de " + nombreUsuario);
-                        currentJugador.setPropietarioNombre(nombreUsuario);
+                        //currentJugador.setPropietarioNombre(nombreUsuario);
                         currentData.setValue(currentJugador);
                         return Transaction.success(currentData);
                     }
