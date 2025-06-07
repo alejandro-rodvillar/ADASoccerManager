@@ -3,34 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
-  <!-- Contenido principal -->
+  <!-- Contenido principal con menú inferior -->
   <LinearLayout
       android:orientation="vertical"
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <!-- Toolbar superior -->
+    <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#77C448"
-        android:title="Unirse a una Liga"
-        android:titleTextColor="@android:color/white"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:background="#78C649"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/menu_hamburguesa"
+        app:title="ADA Soccer Manager" />
 
     <!-- Zona central con formulario centrado -->
     <ScrollView
         android:fillViewport="true"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="24dp">
 
-      <!-- Envoltura añadida para centrar verticalmente -->
+      <!-- Envoltura para centrar verticalmente -->
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent"
@@ -80,7 +83,8 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#77C448"
+        android:background="?android:attr/windowBackground"
+        app:backgroundTint="#77C448"
         app:menu="@menu/bottom_nav_menu" />
   </LinearLayout>
 

@@ -12,13 +12,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Toolbar -->
+        <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="#78C649"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/menu_hamburguesa"
+            app:title="ADA Soccer Manager" />
 
         <!-- Contenido scrollable -->
         <ScrollView
@@ -37,11 +42,11 @@
                     android:id="@+id/tvGestionLigaTitulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gestión de Liga"
+                    android:layout_marginBottom="24dp"
+                    android:fontFamily="@font/audiowide"
+                    android:text="GESTIÓN DE LIGA"
                     android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#3E4044"
-                    android:layout_marginBottom="24dp" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvNombreLiga"
