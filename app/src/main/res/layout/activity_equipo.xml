@@ -207,7 +207,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Mediocampistas -->
+        <!-- Mediocampistas alineados horizontalmente igual que delanteros -->
         <LinearLayout
             android:id="@+id/container_mediocampista1"
             android:layout_width="80dp"
@@ -216,9 +216,8 @@
             android:gravity="center"
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.232"
-            app:layout_constraintTop_toBottomOf="@id/container_defensa1">
+            app:layout_constraintTop_toBottomOf="@id/container_defensa1"
+            app:layout_constraintEnd_toStartOf="@id/container_mediocampista2">
 
             <ImageView
                 android:id="@+id/img_camiseta_mediocampista1"
@@ -246,10 +245,9 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_marginTop="32dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintTop_toBottomOf="@id/container_defensa2">
+            app:layout_constraintStart_toEndOf="@id/container_mediocampista1"
+            app:layout_constraintTop_toBottomOf="@id/container_defensa2"
+            app:layout_constraintEnd_toStartOf="@id/container_mediocampista3">
 
             <ImageView
                 android:id="@+id/img_camiseta_mediocampista2"
@@ -277,10 +275,9 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_marginTop="32dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.779"
-            app:layout_constraintTop_toBottomOf="@id/container_defensa3">
+            app:layout_constraintStart_toEndOf="@id/container_mediocampista2"
+            app:layout_constraintTop_toBottomOf="@id/container_defensa3"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
                 android:id="@+id/img_camiseta_mediocampista3"
