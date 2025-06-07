@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -68,7 +69,16 @@ public class MercadoActivity extends AppCompatActivity {
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(MercadoActivity.this, PerfilUsuarioActivity.class));
             } else if (id == R.id.nav_logout) {
-                startActivity(new Intent(MercadoActivity.this, LoginActivity.class));
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.apply();
+
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(MercadoActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             }
             drawerLayout.closeDrawers();
             return true;
@@ -219,7 +229,6 @@ public class MercadoActivity extends AppCompatActivity {
         });
     }
 
-
     public void comprarJugador(final Jugador jugadorComprado) {
         if (jugadorComprado == null || jugadorComprado.getId() == null) return;
 
@@ -308,11 +317,6 @@ public class MercadoActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
 
     private void cargarJugadoresDesdeCache() {
         mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {

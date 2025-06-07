@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -64,7 +65,15 @@ public class CrearLigaActivity extends AppCompatActivity {
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(this, PerfilUsuarioActivity.class));
             } else if (id == R.id.nav_logout) {
-                startActivity(new Intent(this, LoginActivity.class));
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.apply();
+
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(CrearLigaActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             }
             drawerLayout.closeDrawers();

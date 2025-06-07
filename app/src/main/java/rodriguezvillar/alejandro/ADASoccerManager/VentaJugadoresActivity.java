@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -11,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class VentaJugadoresActivity extends AppCompatActivity {
 
@@ -40,7 +42,16 @@ public class VentaJugadoresActivity extends AppCompatActivity {
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(VentaJugadoresActivity.this, PerfilUsuarioActivity.class));
             } else if (id == R.id.nav_logout) {
-                startActivity(new Intent(VentaJugadoresActivity.this, LoginActivity.class));
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.apply();
+
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(VentaJugadoresActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             }
 
             drawerLayout.closeDrawers();

@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -63,8 +64,16 @@ public class EquipoActivity extends AppCompatActivity {
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(EquipoActivity.this, PerfilUsuarioActivity.class));
             } else if (id == R.id.nav_logout) {
+                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.apply();
+
+                FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(EquipoActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
 
             drawerLayout.closeDrawers();
