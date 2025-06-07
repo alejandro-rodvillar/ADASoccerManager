@@ -2,7 +2,8 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,80 +14,222 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EquipoActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
 
+    // Mapa fijo: equipo → drawable camiseta (igual que en JugadorAdapter)
+    private static final Map<String, Integer> camisetaPorEquipo = new HashMap<String, Integer>() {{
+        put("Rayo Glacial", R.drawable.camiseta_azul);
+        put("Trueno Rojo", R.drawable.camiseta_roja);
+        put("Aurora FC", R.drawable.camiseta_amarilla);
+        put("Dragones del Norte", R.drawable.camiseta_naranja);
+        put("Atlético Eclipse", R.drawable.camiseta_morada);
+        put("Estrella del Sur", R.drawable.camiseta_verde);
+        put("Titanes del Este", R.drawable.camiseta_turquesa);
+        put("Leones del Viento", R.drawable.camiseta_azul_clara);
+    }};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_equipo);
 
-        // Se configura el Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Se configura el DrawerLayout y NavigationView
-        drawerLayout = findViewById(R.id.drawerLayout); // El ID tiene que coincidir
+        drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
 
-        // Se configura el ActionBarDrawerToggle
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Controles de los clics en el menú lateral
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
 
-                if (id == R.id.nav_profile) {
-                    startActivity(new Intent(EquipoActivity.this, PerfilUsuarioActivity.class));
-                } else if (id == R.id.nav_logout) {
-                    // Aquí se inicia la actividad Login cuando se cierra sesión
-                    Intent intent = new Intent(EquipoActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    //finish(); // Cierra esta actividad para que el usuario no pueda regresar
-                }
+            if (id == R.id.nav_profile) {
+                startActivity(new Intent(EquipoActivity.this, PerfilUsuarioActivity.class));
+            } else if (id == R.id.nav_logout) {
+                Intent intent = new Intent(EquipoActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
 
-                drawerLayout.closeDrawers();
+            drawerLayout.closeDrawers();
+            return true;
+        });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_my_team);
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(EquipoActivity.this, MainActivity.class));
+                return true;
+            } else if (id == R.id.nav_leagues) {
+                startActivity(new Intent(EquipoActivity.this, LigasActivity.class));
+                return true;
+            } else if (id == R.id.nav_my_team) {
+                Toast.makeText(EquipoActivity.this, "Ya estás en Mi Equipo", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (id == R.id.nav_market) {
+                startActivity(new Intent(EquipoActivity.this, MercadoActivity.class));
                 return true;
             }
+            return false;
         });
 
-        // Configuración de la navegación en BottomNavigationView
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_my_team); // El botón "Mi Equipo" resalta
-
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-
-                if (id == R.id.nav_home) {
-                    startActivity(new Intent(EquipoActivity.this, MainActivity.class));
-                    return true;
-                } else if (id == R.id.nav_leagues) {
-                    startActivity(new Intent(EquipoActivity.this, LigasActivity.class));
-                    return true;
-                } else if (id == R.id.nav_my_team) {
-                    Toast.makeText(EquipoActivity.this, "Ya estás en Mi Equipo", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (id == R.id.nav_market) {
-                    startActivity(new Intent(EquipoActivity.this, MercadoActivity.class));
-                    return true;
-                }
-                return false;
-            }
-        });
+        cargarJugadores();
     }
 
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        toggle.syncState(); // Se sincroniza el estado del toggle
+        toggle.syncState();
+    }
+
+    private String normalizarPosicion(String posicion) {
+        posicion = posicion.toLowerCase();
+        if (posicion.equals("centrocampista")) {
+            return "mediocampista";
+        }
+        return posicion;
+    }
+
+    private void cargarJugadores() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "No hay usuario logueado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = user.getUid();
+        DatabaseReference refEquipo = FirebaseDatabase.getInstance()
+                .getReference("usuarios").child(uid).child("equipoUsuario");
+
+        String[] posiciones = {
+                "portero",
+                "defensa1", "defensa2", "defensa3", "defensa4",
+                "mediocampista1", "mediocampista2", "mediocampista3",
+                "delantero1", "delantero2", "delantero3"
+        };
+
+        Map<String, Boolean> ocupados = new HashMap<>();
+        for (String pos : posiciones) {
+            int idNombre = getResources().getIdentifier("tv_nombre_" + pos, "id", getPackageName());
+            TextView tvNombre = findViewById(idNombre);
+            if (tvNombre != null) {
+                tvNombre.setText("");
+            }
+
+            int idCamiseta = getResources().getIdentifier("img_camiseta_" + pos, "id", getPackageName());
+            ImageView ivCamiseta = findViewById(idCamiseta);
+            if (ivCamiseta != null) {
+                ivCamiseta.setImageDrawable(null);
+            }
+
+            ocupados.put(pos, false);
+        }
+
+        refEquipo.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    Toast.makeText(EquipoActivity.this, "No hay jugadores en el equipo", Toast.LENGTH_SHORT).show();
+
+                    for (String pos : posiciones) {
+                        int idNombre = getResources().getIdentifier("tv_nombre_" + pos, "id", getPackageName());
+                        TextView tvNombre = findViewById(idNombre);
+                        if (tvNombre != null) {
+                            tvNombre.setText("Vacío");
+                        }
+
+                        int idCamiseta = getResources().getIdentifier("img_camiseta_" + pos, "id", getPackageName());
+                        ImageView ivCamiseta = findViewById(idCamiseta);
+                        if (ivCamiseta != null) {
+                            ivCamiseta.setImageDrawable(null);
+                        }
+                    }
+                    return;
+                }
+
+                for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
+                    String nombre = jugadorSnap.child("nombre").getValue(String.class);
+                    String posicion = jugadorSnap.child("posicion").getValue(String.class);
+                    String equipo = jugadorSnap.child("equipo").getValue(String.class);
+
+                    if (nombre != null && posicion != null && equipo != null) {
+                        String posicionNormalizada = normalizarPosicion(posicion);
+                        boolean puesto = false;
+
+                        for (String posSlot : posiciones) {
+                            if (posSlot.startsWith(posicionNormalizada) && !ocupados.get(posSlot)) {
+                                int idNombre = getResources().getIdentifier("tv_nombre_" + posSlot, "id", getPackageName());
+                                TextView tvNombre = findViewById(idNombre);
+
+                                int idCamiseta = getResources().getIdentifier("img_camiseta_" + posSlot, "id", getPackageName());
+                                ImageView ivCamiseta = findViewById(idCamiseta);
+
+                                if (tvNombre != null && ivCamiseta != null) {
+                                    tvNombre.setText(nombre);
+
+                                    Integer camisetaRes = camisetaPorEquipo.get(equipo);
+                                    if (camisetaRes != null) {
+                                        ivCamiseta.setImageResource(camisetaRes);
+                                    } else {
+                                        ivCamiseta.setImageDrawable(null);
+                                    }
+
+                                    ocupados.put(posSlot, true);
+                                    puesto = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!puesto) {
+                            Toast.makeText(EquipoActivity.this,
+                                    "No hay slot disponible para " + nombre + " en posición " + posicion,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                for (String pos : posiciones) {
+                    if (!ocupados.get(pos)) {
+                        int idNombre = getResources().getIdentifier("tv_nombre_" + pos, "id", getPackageName());
+                        TextView tvNombre = findViewById(idNombre);
+                        if (tvNombre != null) {
+                            tvNombre.setText("Vacío");
+                        }
+
+                        int idCamiseta = getResources().getIdentifier("img_camiseta_" + pos, "id", getPackageName());
+                        ImageView ivCamiseta = findViewById(idCamiseta);
+                        if (ivCamiseta != null) {
+                            ivCamiseta.setImageDrawable(null);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(EquipoActivity.this, "Error al cargar equipo: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
