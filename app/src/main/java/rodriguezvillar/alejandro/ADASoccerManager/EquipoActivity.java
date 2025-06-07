@@ -1,6 +1,7 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,7 +31,6 @@ public class EquipoActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
 
-    // Mapa fijo: equipo → drawable camiseta (igual que en JugadorAdapter)
     private static final Map<String, Integer> camisetaPorEquipo = new HashMap<String, Integer>() {{
         put("Rayo Glacial", R.drawable.camiseta_azul);
         put("Trueno Rojo", R.drawable.camiseta_roja);
@@ -92,6 +92,22 @@ public class EquipoActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        // Configurar TextView "vender jugador"
+        TextView tvVenderJugador = findViewById(R.id.tv_vender_jugador);
+        if (tvVenderJugador != null) {
+            // Subrayar texto
+            tvVenderJugador.setPaintFlags(tvVenderJugador.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+            // Color ya puesto en XML (#78C649), si quieres cambiarlo aquí también:
+            // tvVenderJugador.setTextColor(Color.parseColor("#78C649"));
+
+            // Acción click para abrir actividad VentaJugadoresActivity
+            tvVenderJugador.setOnClickListener(v -> {
+                Intent intent = new Intent(EquipoActivity.this, VentaJugadoresActivity.class);
+                startActivity(intent);
+            });
+        }
 
         cargarJugadores();
     }

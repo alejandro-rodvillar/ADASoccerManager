@@ -54,6 +54,23 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.631" />
 
+        <TextView
+            android:id="@+id/tv_vender_jugador"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Quieres vender a algún jugador? Pulsa aquí"
+            android:textColor="#78C649"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toBottomOf="@id/img_campo_futbol"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
         <!-- Portero -->
         <LinearLayout
             android:id="@+id/container_portero"
