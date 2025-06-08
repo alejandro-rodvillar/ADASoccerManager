@@ -8,13 +8,11 @@
     android:background="@color/white"
     tools:context=".EquipoActivity">
 
-    <!-- Contenedor principal de la pantalla -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <!-- Toolbar (barra superior con menú lateral) -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -24,28 +22,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="ADA Soccer Manager" />
+            app:title="@string/app_name2" />
 
-        <!-- Texto ALINEACIÓN encima del campo de fútbol -->
         <TextView
             android:id="@+id/tv_alineacion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/audiowide"
-            android:text="ALINEACIÓN"
+            android:text="@string/alineacion"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <!-- Imagen de fondo del campo de fútbol -->
         <ImageView
             android:id="@+id/img_campo_futbol"
             android:layout_width="353dp"
             android:layout_height="537dp"
-            android:contentDescription="Campo de fútbol"
+            android:contentDescription="@string/campo_futbol_descripcion"
             android:scaleType="centerCrop"
             android:src="@drawable/campo_futbol"
             app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
@@ -58,7 +54,7 @@
             android:id="@+id/tv_vender_jugador"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="¿Quieres vender a algún jugador? Pulsa aquí"
+            android:text="@string/vender_jugador_pregunta"
             android:textColor="#78C649"
             android:textStyle="bold"
             android:textSize="16sp"
@@ -70,8 +66,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-
-        <!-- Portero -->
         <LinearLayout
             android:id="@+id/container_portero"
             android:layout_width="80dp"
@@ -86,14 +80,14 @@
                 android:id="@+id/img_camiseta_portero"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta del portero"
+                android:contentDescription="@string/camiseta_portero_descripcion"
                 android:src="@drawable/camiseta_azul" />
 
             <TextView
                 android:id="@+id/tv_nombre_portero"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Portero"
+                android:text="@string/portero"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -101,7 +95,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Defensas -->
+        <!-- Defensa 1 -->
         <LinearLayout
             android:id="@+id/container_defensa1"
             android:layout_width="80dp"
@@ -117,14 +111,14 @@
                 android:id="@+id/img_camiseta_defensa1"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta defensa 1"
+                android:contentDescription="@string/camiseta_defensa1_descripcion"
                 android:src="@drawable/camiseta_roja" />
 
             <TextView
                 android:id="@+id/tv_nombre_defensa1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Defensa 1"
+                android:text="@string/defensa1"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -132,6 +126,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
+        <!-- Defensa 2 -->
         <LinearLayout
             android:id="@+id/container_defensa2"
             android:layout_width="80dp"
@@ -148,14 +143,14 @@
                 android:id="@+id/img_camiseta_defensa2"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta defensa 2"
+                android:contentDescription="@string/camiseta_defensa2_descripcion"
                 android:src="@drawable/camiseta_roja" />
 
             <TextView
                 android:id="@+id/tv_nombre_defensa2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Defensa 2"
+                android:text="@string/defensa2"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -163,6 +158,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
+        <!-- Defensa 3 -->
         <LinearLayout
             android:id="@+id/container_defensa3"
             android:layout_width="80dp"
@@ -179,14 +175,14 @@
                 android:id="@+id/img_camiseta_defensa3"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta defensa 3"
+                android:contentDescription="@string/camiseta_defensa3_descripcion"
                 android:src="@drawable/camiseta_roja" />
 
             <TextView
                 android:id="@+id/tv_nombre_defensa3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Defensa 3"
+                android:text="@string/defensa3"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -194,6 +190,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
+        <!-- Defensa 4 -->
         <LinearLayout
             android:id="@+id/container_defensa4"
             android:layout_width="80dp"
@@ -209,14 +206,14 @@
                 android:id="@+id/img_camiseta_defensa4"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta defensa 4"
+                android:contentDescription="@string/camiseta_defensa4_descripcion"
                 android:src="@drawable/camiseta_roja" />
 
             <TextView
                 android:id="@+id/tv_nombre_defensa4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Defensa 4"
+                android:text="@string/defensa4"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -224,7 +221,8 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Mediocampistas alineados horizontalmente igual que delanteros -->
+        <!-- Mediocampistas -->
+        <!-- Mediocampista 1 -->
         <LinearLayout
             android:id="@+id/container_mediocampista1"
             android:layout_width="80dp"
@@ -240,14 +238,14 @@
                 android:id="@+id/img_camiseta_mediocampista1"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta mediocampista 1"
+                android:contentDescription="@string/camiseta_medio1_descripcion"
                 android:src="@drawable/camiseta_amarilla" />
 
             <TextView
                 android:id="@+id/tv_nombre_mediocampista1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medio 1"
+                android:text="@string/medio1"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -255,6 +253,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
+        <!-- Mediocampista 2 -->
         <LinearLayout
             android:id="@+id/container_mediocampista2"
             android:layout_width="80dp"
@@ -270,14 +269,14 @@
                 android:id="@+id/img_camiseta_mediocampista2"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta mediocampista 2"
+                android:contentDescription="@string/camiseta_medio2_descripcion"
                 android:src="@drawable/camiseta_amarilla" />
 
             <TextView
                 android:id="@+id/tv_nombre_mediocampista2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medio 2"
+                android:text="@string/medio2"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -285,6 +284,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
+        <!-- Mediocampista 3 -->
         <LinearLayout
             android:id="@+id/container_mediocampista3"
             android:layout_width="80dp"
@@ -300,14 +300,14 @@
                 android:id="@+id/img_camiseta_mediocampista3"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta mediocampista 3"
+                android:contentDescription="@string/camiseta_medio3_descripcion"
                 android:src="@drawable/camiseta_amarilla" />
 
             <TextView
                 android:id="@+id/tv_nombre_mediocampista3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medio 3"
+                android:text="@string/medio3"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -331,14 +331,14 @@
                 android:id="@+id/img_camiseta_delantero1"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta delantero 1"
+                android:contentDescription="@string/camiseta_delantero1_descripcion"
                 android:src="@drawable/camiseta_naranja" />
 
             <TextView
                 android:id="@+id/tv_nombre_delantero1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delantero 1"
+                android:text="@string/delantero1"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -361,14 +361,14 @@
                 android:id="@+id/img_camiseta_delantero2"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta delantero 2"
+                android:contentDescription="@string/camiseta_delantero2_descripcion"
                 android:src="@drawable/camiseta_naranja" />
 
             <TextView
                 android:id="@+id/tv_nombre_delantero2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delantero 2"
+                android:text="@string/delantero2"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -391,14 +391,14 @@
                 android:id="@+id/img_camiseta_delantero3"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:contentDescription="Camiseta delantero 3"
+                android:contentDescription="@string/camiseta_delantero3_descripcion"
                 android:src="@drawable/camiseta_naranja" />
 
             <TextView
                 android:id="@+id/tv_nombre_delantero3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delantero 3"
+                android:text="@string/delantero3"
                 android:textColor="@android:color/black"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -406,7 +406,6 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Navegación inferior -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="0dp"
@@ -418,10 +417,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_nav_menu" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Menú lateral -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="260dp"
@@ -430,5 +427,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/header_layout"
         app:menu="@menu/drawer_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>

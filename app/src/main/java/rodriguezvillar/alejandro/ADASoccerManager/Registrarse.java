@@ -118,7 +118,7 @@ public class Registrarse extends AppCompatActivity {
                                     });
                         }
                     } else {
-                        Toast.makeText(this, "Error al registrar: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Error al registrar: La dirección de correo no es válida", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

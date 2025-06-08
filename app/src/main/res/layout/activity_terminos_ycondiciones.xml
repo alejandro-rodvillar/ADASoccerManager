@@ -16,55 +16,16 @@
             android:background="@android:color/transparent"
             android:textColor="#000000"
             android:textSize="16sp"
-            android:text="
-Bienvenido a Fantasy Fútbol - ADASoccerManager
-
-Estos términos y condiciones son importantes para que puedas usar la aplicación de forma segura y divertida. Por favor, lee atentamente.
-
-1. Introducción
-Fantasy Fútbol es una aplicación educativa y recreativa creada para que estudiantes y aficionados del fútbol puedan armar sus equipos de ensueño, participar en ligas internas y mejorar sus conocimientos deportivos a través de la práctica virtual.
-
-2. Registro y acceso
-Para usar la app, debes registrarte con un correo electrónico válido y una contraseña segura. Asegúrate de no compartir tus datos de acceso con nadie para proteger tu cuenta. La aplicación no se hace responsable de accesos no autorizados causados por compartir información.
-
-3. Uso responsable
-Esta plataforma es un espacio para divertirse y aprender. Se espera que todos los usuarios mantengan un comportamiento respetuoso con los demás, evitando lenguaje ofensivo, trampas, o conductas que puedan afectar la experiencia de juego.
-
-4. Creación de equipos y participación
-Puedes crear equipos personalizados con jugadores ficticios y competir en ligas con otros usuarios. Los resultados se basan en datos simulados y no afectan competiciones reales. Es un juego diseñado para estimular el aprendizaje y la estrategia.
-
-5. Datos y privacidad
-Tus datos personales (nombre, correo) se usan exclusivamente para el funcionamiento interno de la aplicación y no serán compartidos con terceros. La app cumple con las normativas de privacidad vigentes para garantizar la seguridad de tu información.
-
-6. Limitaciones y responsabilidades
-La aplicación es un proyecto educativo sin fines comerciales. No garantiza premios reales ni compensaciones. Tampoco se responsabiliza por fallos técnicos, interrupciones o pérdidas de datos.
-
-7. Actualizaciones y modificaciones
-Fantasy Fútbol se actualizará regularmente para mejorar funcionalidades y corregir errores. Los cambios se aplicarán automáticamente y sin aviso previo. El uso continuo de la app implica la aceptación de estas actualizaciones.
-
-8. Contenido generado por usuarios
-Los nombres y equipos creados por los usuarios serán visibles en las competiciones internas. Se solicita respetar los derechos y la creatividad de otros participantes, evitando contenido inapropiado o que pueda generar conflictos.
-
-9. Terminación del servicio
-Nos reservamos el derecho de suspender o eliminar cuentas que incumplan las normas o que dañen la comunidad. En tales casos, se notificará al usuario afectado y se procederá con las medidas necesarias.
-
-10. Contacto y soporte
-Para cualquier duda o problema, puedes contactar con el equipo de desarrollo a través del correo soporte@adasoccer.edu. Estamos aquí para ayudarte y mejorar la experiencia.
-
-11. Aceptación de términos
-Al usar esta aplicación, confirmas que has leído y aceptado estos términos y condiciones. Si no estás de acuerdo con alguna parte, te recomendamos no usar la app.
-
-Gracias por ser parte de Fantasy Fútbol - ADASoccerManager. ¡Disfruta del juego, aprende y compite de manera sana y divertida!
-" />
+            android:text="@string/terms_body" />
 
         <Button
             android:id="@+id/btnAceptar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Aceptar"
+            android:text="@string/accept_button"
             android:layout_marginTop="24dp"
             android:backgroundTint="#3E4044"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF" />
 
     </LinearLayout>
 

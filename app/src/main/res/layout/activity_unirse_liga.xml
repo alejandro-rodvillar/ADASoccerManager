@@ -13,7 +13,6 @@
       android:layout_height="match_parent">
 
     <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -23,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/menu_hamburguesa"
-        app:title="ADA Soccer Manager" />
+        app:title="@string/app_name_toolbarligas" />
 
     <!-- Zona central con formulario centrado -->
     <ScrollView
@@ -50,7 +49,7 @@
               android:id="@+id/tvJoinLeague"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="Introduce el código de la liga"
+              android:text="@string/tv_join_league"
               android:textSize="18sp"
               android:textStyle="bold"
               android:layout_marginBottom="16dp" />
@@ -61,7 +60,7 @@
               android:layout_height="wrap_content"
               android:layout_marginBottom="24dp"
               android:background="@color/white"
-              android:hint="Código de la liga"
+              android:hint="@string/hint_league_code"
               android:importantForAutofill="no"
               android:inputType="text"
               android:maxLength="8"
@@ -71,7 +70,7 @@
               android:id="@+id/btnJoinLeague"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:text="Unirse a la liga"
+              android:text="@string/btn_join_league"
               android:backgroundTint="#77C448"
               android:textColor="#3E4044" />
         </LinearLayout>

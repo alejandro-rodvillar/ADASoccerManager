@@ -8,12 +8,10 @@
     android:backgroundTint="#77C448"
     tools:context=".CrearLigaActivity">
 
-    <!-- Contenedor principal de la pantalla -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -23,16 +21,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="ADA Soccer Manager" />
+            app:title="@string/app_name_toolbar" />
 
-        <!-- Título de la actividad -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="132dp"
             android:fontFamily="@font/audiowide"
-            android:text="NUEVA LIGA"
+            android:text="@string/title_new_league"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,47 +37,42 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- EditText para el nombre de la liga -->
         <EditText
             android:id="@+id/etLeagueName"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
-            android:hint="Nombre de la liga"
+            android:hint="@string/hint_league_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-        <!-- EditText para el número de participantes -->
         <EditText
             android:id="@+id/etParticipants"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Número de participantes"
+            android:hint="@string/hint_participants_number"
             android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etLeagueName" />
 
-        <!-- Botón para crear la liga -->
         <Button
             android:id="@+id/btnSubmit"
             android:layout_width="234dp"
             android:layout_height="49dp"
             android:layout_marginTop="32dp"
             android:backgroundTint="#76C247"
-            android:text="Crear"
+            android:text="@string/button_create"
             android:textColor="#3E4044"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etParticipants" />
 
-
-        <!-- Bottom Navigation -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
@@ -94,7 +86,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- NavigationView (menú lateral) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"
@@ -105,5 +96,4 @@
         app:menu="@menu/drawer_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
-
 

@@ -6,11 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Imagen de fondo -->
     <ImageView
         android:id="@+id/cris"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
+        android:contentDescription="@string/background_image_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -19,6 +21,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/fondo3" />
 
+    <!-- Texto principal -->
     <TextView
         android:id="@+id/textView3"
         android:layout_width="242dp"
@@ -26,7 +29,7 @@
         android:layout_marginStart="130dp"
         android:layout_marginEnd="107dp"
         android:layout_marginBottom="4dp"
-        android:text="PULSA PARA COMENZAR"
+        android:text="@string/start_prompt"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"

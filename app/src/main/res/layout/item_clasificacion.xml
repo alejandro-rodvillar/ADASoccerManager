@@ -11,7 +11,7 @@
         android:id="@+id/tvPosicion"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:text="1"
+        android:text="@string/ranking_position"
         android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="center" />
@@ -22,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="NombreUsuario"
+        android:text="@string/username_sample"
         android:textSize="16sp"
         android:paddingStart="12dp"
         android:paddingEnd="12dp" />
@@ -32,7 +32,7 @@
         android:id="@+id/tvPuntos"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:text="100"
+        android:text="@string/user_points"
         android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="end" />

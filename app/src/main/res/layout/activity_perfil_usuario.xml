@@ -20,7 +20,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="ADA Soccer Manager" />
+            app:title="@string/app_nameusuario" />
 
         <TextView
             android:id="@+id/textViewProfile"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:fontFamily="@font/audiowide"
-            android:text="PERFIL DE USUARIO"
+            android:text="@string/profile_title"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +71,7 @@
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="8dp"
-                android:hint="Introduce tu nombre"
+                android:hint="@string/hint_enter_name"
                 android:inputType="textPersonName"
                 android:padding="8dp"
                 android:textSize="18sp"
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_marginEnd="16dp"
-                android:text="Guardar"
+                android:text="@string/btn_save"
                 android:textAllCaps="false"
                 android:backgroundTint="#78C649"
                 android:textColor="#3E4044"
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
             android:layout_marginTop="16dp"
-            android:text="Nombre de usuario: j.perez_"
+            android:text="@string/username_label"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layoutNombreBoton" />
@@ -112,19 +112,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
             android:layout_marginTop="8dp"
-            android:text="Correo: juan.perez@example.com"
+            android:text="@string/email_label"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewNombreUsuario" />
 
-        <!-- 🔐 Botón para cambiar contraseña -->
         <Button
             android:id="@+id/buttonCambiarContrasena"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:backgroundTint="#78C649"
-            android:text="Cambiar contraseña"
+            android:text="@string/btn_change_password"
             android:textColor="#3E4044"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

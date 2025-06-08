@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="ADA Soccer Manager" />
+            app:title="@string/app_title" />
 
         <!-- Contenido scrollable -->
         <ScrollView
@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:fontFamily="@font/audiowide"
-                    android:text="GESTIÓN DE LIGA"
+                    android:text="@string/gestion_liga_titulo"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
@@ -52,7 +52,7 @@
                     android:id="@+id/tvNombreLiga"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nombre de la Liga: "
+                    android:text="@string/nombre_liga"
                     android:textSize="18sp"
                     android:textColor="#3E4044"
                     android:layout_marginBottom="8dp" />
@@ -61,7 +61,7 @@
                     android:id="@+id/tvCreadorLiga"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Creador: "
+                    android:text="@string/creador_liga"
                     android:textSize="18sp"
                     android:textColor="#3E4044"
                     android:layout_marginBottom="8dp" />
@@ -70,7 +70,7 @@
                     android:id="@+id/tvParticipantes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Participantes: "
+                    android:text="@string/participantes"
                     android:textSize="18sp"
                     android:textColor="#3E4044"
                     android:layout_marginBottom="8dp" />
@@ -79,7 +79,7 @@
                     android:id="@+id/tvCodigoLiga"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Código de la Liga: "
+                    android:text="@string/codigo_liga"
                     android:textSize="18sp"
                     android:textColor="#3E4044"
                     android:layout_marginBottom="16dp" />
@@ -88,7 +88,7 @@
                     android:id="@+id/btnCompartirCodigo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Compartir Código"
+                    android:text="@string/btn_compartir_codigo"
                     android:backgroundTint="#77C448"
                     android:textColor="#3E4044"
                     android:layout_marginBottom="12dp" />
@@ -97,7 +97,7 @@
                     android:id="@+id/btnSalirLiga"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Salir de la Liga"
+                    android:text="@string/btn_salir_liga"
                     android:backgroundTint="#77C448"
                     android:textColor="#3E4044"
                     android:layout_marginBottom="12dp"
@@ -107,7 +107,7 @@
                     android:id="@+id/btnEliminarLiga"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Eliminar Liga"
+                    android:text="@string/btn_eliminar_liga"
                     android:backgroundTint="#77C448"
                     android:textColor="#3E4044"
                     android:visibility="gone" />
