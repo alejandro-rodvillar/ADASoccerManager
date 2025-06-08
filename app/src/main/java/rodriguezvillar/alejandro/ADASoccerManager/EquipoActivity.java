@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ public class EquipoActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
     private TextView tvMonedas;
+    private TextView tvVenderJugador;
 
     private static final Map<String, Integer> camisetaPorEquipo = new HashMap<String, Integer>() {{
         put("Rayo Glacial", R.drawable.camiseta_azul);
@@ -103,7 +105,7 @@ public class EquipoActivity extends AppCompatActivity {
             return false;
         });
 
-        TextView tvVenderJugador = findViewById(R.id.tv_vender_jugador);
+        tvVenderJugador = findViewById(R.id.tv_vender_jugador);
         if (tvVenderJugador != null) {
             tvVenderJugador.setPaintFlags(tvVenderJugador.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
@@ -116,9 +118,51 @@ public class EquipoActivity extends AppCompatActivity {
         // Inicializamos el TextView para monedas
         tvMonedas = findViewById(R.id.textViewMonedas);
 
+        // Verificamos si el usuario está en una liga para mostrar u ocultar el TextView de vender jugador
+        verificarLigaUsuario();
+
         cargarMonedas();
 
         cargarJugadores();
+    }
+
+    private void verificarLigaUsuario() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            // Usuario no logueado, ocultar
+            if (tvVenderJugador != null) {
+                tvVenderJugador.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        String uid = user.getUid();
+        DatabaseReference refLigaId = FirebaseDatabase.getInstance()
+                .getReference("usuarios").child(uid).child("ligaId");
+
+        refLigaId.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String ligaId = snapshot.getValue(String.class);
+                if (ligaId == null || ligaId.isEmpty()) {
+                    if (tvVenderJugador != null) {
+                        tvVenderJugador.setVisibility(View.GONE);
+                    }
+                } else {
+                    if (tvVenderJugador != null) {
+                        tvVenderJugador.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // En caso de error, ocultamos para prevenir acceso indebido
+                if (tvVenderJugador != null) {
+                    tvVenderJugador.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     @Override
