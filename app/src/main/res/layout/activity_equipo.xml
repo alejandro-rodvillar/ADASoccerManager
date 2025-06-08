@@ -109,7 +109,8 @@
             android:gravity="center"
             app:layout_constraintTop_toTopOf="@id/img_campo_futbol"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_portero"
@@ -140,7 +141,8 @@
             android:layout_marginStart="44dp"
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_portero">
+            app:layout_constraintTop_toBottomOf="@id/container_portero"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_defensa1"
@@ -172,7 +174,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.374"
-            app:layout_constraintTop_toBottomOf="@id/container_portero">
+            app:layout_constraintTop_toBottomOf="@id/container_portero"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_defensa2"
@@ -204,7 +207,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.625"
-            app:layout_constraintTop_toBottomOf="@id/container_portero">
+            app:layout_constraintTop_toBottomOf="@id/container_portero"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_defensa3"
@@ -235,7 +239,8 @@
             android:layout_marginEnd="44dp"
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/container_portero">
+            app:layout_constraintTop_toBottomOf="@id/container_portero"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_defensa4"
@@ -267,7 +272,8 @@
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_defensa1"
-            app:layout_constraintEnd_toStartOf="@id/container_mediocampista2">
+            app:layout_constraintEnd_toStartOf="@id/container_mediocampista2"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_mediocampista1"
@@ -298,7 +304,8 @@
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@id/container_mediocampista1"
             app:layout_constraintTop_toBottomOf="@id/container_defensa2"
-            app:layout_constraintEnd_toStartOf="@id/container_mediocampista3">
+            app:layout_constraintEnd_toStartOf="@id/container_mediocampista3"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_mediocampista2"
@@ -329,7 +336,8 @@
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@id/container_mediocampista2"
             app:layout_constraintTop_toBottomOf="@id/container_defensa3"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_mediocampista3"
@@ -360,7 +368,8 @@
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/container_mediocampista1"
-            app:layout_constraintEnd_toStartOf="@id/container_delantero2">
+            app:layout_constraintEnd_toStartOf="@id/container_delantero2"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_delantero1"
@@ -390,7 +399,8 @@
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@id/container_delantero1"
             app:layout_constraintTop_toBottomOf="@id/container_mediocampista1"
-            app:layout_constraintEnd_toStartOf="@id/container_delantero3">
+            app:layout_constraintEnd_toStartOf="@id/container_delantero3"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_delantero2"
@@ -420,7 +430,8 @@
             android:layout_marginTop="32dp"
             app:layout_constraintStart_toEndOf="@id/container_delantero2"
             app:layout_constraintTop_toBottomOf="@id/container_mediocampista1"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/img_camiseta_delantero3"

@@ -75,7 +75,7 @@
 
     <!-- LISTA JUGADORES FIREBASE-->
     <string name="buscar_jugadores_title">Buscar jugadores</string>
-    <string name="buscar_jugador_hint">Buscar jugador...</string>
+    <string name="buscar_jugador_hint">Buscar jugador…</string>
     <string name="sin_resultados_text">No se encontraron jugadores</string>
 
     <!-- MAIN-->
@@ -88,8 +88,8 @@
     <string name="liga_fantasy_title">Liga Fantasy</string>
 
     <!-- MERCADO-->
-    <string name="loading_remaining_time">Cargando tiempo restante...</string>
-    <string name="loading_coins">Cargando monedas...</string>
+    <string name="loading_remaining_time">Cargando tiempo restante…</string>
+    <string name="loading_coins">Cargando monedas…</string>
 
     <!-- PERFIL USUARIO-->
     <string name="profile_title">PERFIL DE USUARIO</string>
@@ -182,5 +182,6 @@
     <string name="hint_email">E-Mail</string>
     <string name="hint_contrasena">Contraseña</string>
     <string name="btn_registrarse">Registrarse</string>
+
 
 </resources>
