@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:title="@string/app_namemercado" />
+            app:title="@string/app_name" />
 
         <!-- SCROLL CON LOS JUGADORES -->
         <androidx.core.widget.NestedScrollView

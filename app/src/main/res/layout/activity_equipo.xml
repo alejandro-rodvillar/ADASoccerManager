@@ -22,7 +22,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="@string/app_name2" />
+            app:title="@string/app_name" />
 
         <LinearLayout
             android:id="@+id/layoutSinLiga"
