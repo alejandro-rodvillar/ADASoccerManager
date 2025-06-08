@@ -1,4 +1,4 @@
-const functions = require("firebase-functions"); // ⬅️ V1 IMPORTACIÓN
+const functions = require("firebase-functions"); 
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -70,15 +70,30 @@ exports.actualizarPuntosJugadores = functions.pubsub
 
       const promesasUpdateTotal = Object.entries(sumaPuntosPorUsuario).map(async ([uid, sumaPuntos]) => {
         if (sumaPuntos === 0) return;
+
         const puntosUsuarioRef = db.ref(`usuarios/${uid}/puntos`);
-        const snapshot = await puntosUsuarioRef.once("value");
-        const puntosActuales = snapshot.val() || 0;
+        const monedasUsuarioRef = db.ref(`usuarios/${uid}/monedas`);
+
+        const [puntosSnap, monedasSnap] = await Promise.all([
+          puntosUsuarioRef.once("value"),
+          monedasUsuarioRef.once("value")
+        ]);
+
+        const puntosActuales = puntosSnap.val() || 0;
         const nuevosPuntos = puntosActuales + sumaPuntos;
-        return puntosUsuarioRef.set(nuevosPuntos);
+
+        const monedasActuales = monedasSnap.val() || 0;
+        const monedasAGanar = sumaPuntos >= 0 ? sumaPuntos * 10 : 0;
+        const nuevasMonedas = monedasActuales + monedasAGanar;
+
+        await Promise.all([
+          puntosUsuarioRef.set(nuevosPuntos),
+          monedasUsuarioRef.set(nuevasMonedas)
+        ]);
       });
 
       await Promise.all(promesasUpdateTotal);
-      console.log("Actualizados puntos totales acumulados de usuarios");
+      console.log("Actualizados puntos y monedas de usuarios");
 
       return null;
     } catch (error) {
