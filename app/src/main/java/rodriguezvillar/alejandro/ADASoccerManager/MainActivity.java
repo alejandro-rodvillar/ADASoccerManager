@@ -27,40 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private static final String TAG = "FirebaseData";
 
-    // Función auxiliar para mostrar por consola todos los jugadores almacenados en Firebase
-    private void mostrarTodosLosDatos() {
-        mDatabase.child("jugadores").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "========== TODOS LOS JUGADORES ==========");
-
-                for (DataSnapshot jugadorSnapshot : dataSnapshot.getChildren()) {
-                    String key = jugadorSnapshot.getKey();
-                    String nombre = jugadorSnapshot.child("nombre").getValue(String.class);
-                    String posicion = jugadorSnapshot.child("posicion").getValue(String.class);
-                    String equipo = jugadorSnapshot.child("equipo").getValue(String.class);
-                    Long precio = jugadorSnapshot.child("precio").getValue(Long.class);
-                    Long puntos = jugadorSnapshot.child("puntos").getValue(Long.class);
-                    String estado = jugadorSnapshot.child("estado").getValue(String.class);
-
-                    Log.d(TAG, "ID: " + key);
-                    Log.d(TAG, "Nombre: " + nombre);
-                    Log.d(TAG, "Posición: " + posicion);
-                    Log.d(TAG, "Equipo: " + equipo);
-                    Log.d(TAG, "Precio: " + precio);
-                    Log.d(TAG, "Puntos: " + puntos);
-                    Log.d(TAG, "Estado: " + estado);
-                    Log.d(TAG, "----------------------------------------");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Error al leer datos: " + databaseError.getMessage());
-            }
-        });
-    }
-
     // Comprobación de si el usuario pertenece a una liga
     private void comprobarSiPerteneceALiga(Button btnManageLeague, Button btnJoinLeague) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -119,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mostrarTodosLosDatos();
+
 
         // Botón crear liga
         findViewById(R.id.btnCreateLeague).setOnClickListener(v -> {
