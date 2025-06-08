@@ -109,7 +109,7 @@ public class MercadoActivity extends AppCompatActivity {
         textViewMonedas = findViewById(R.id.textViewMonedas);
 
         recyclerViewMercado.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new JugadorAdapter(listaAleatoria, true);
+        adapter = new JugadorAdapter(listaAleatoria, R.layout.item_jugador, true, jugador -> comprarJugador(jugador));
         recyclerViewMercado.setAdapter(adapter);
 
         mercadoRef = FirebaseDatabase.getInstance().getReference("mercado");

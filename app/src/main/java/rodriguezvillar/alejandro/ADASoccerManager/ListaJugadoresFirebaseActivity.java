@@ -67,7 +67,7 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
         tvSinResultados = findViewById(R.id.tvSinResultados);
         tvSinResultados.setVisibility(View.GONE);
 
-        adapter = new JugadorAdapter(listaFiltrada, false);
+        adapter = new JugadorAdapter(listaFiltrada, R.layout.item_jugador, false, null);
         recyclerView.setAdapter(adapter);
 
         cargarJugadoresEnVenta();

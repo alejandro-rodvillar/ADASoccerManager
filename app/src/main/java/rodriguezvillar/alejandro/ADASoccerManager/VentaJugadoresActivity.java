@@ -11,43 +11,50 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 public class VentaJugadoresActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
-    private TextView tvMonedas;
+    private RecyclerView recyclerViewVenta;
+    private JugadorAdapter adapter;
+    private List<Jugador> listaJugadoresUsuario = new ArrayList<>();
+    private DatabaseReference userEquipoRef;
+    private DatabaseReference userRef;
+    private TextView textViewMonedas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_venta_jugadores);
 
-        // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Drawer Layout & NavigationView
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
-
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(VentaJugadoresActivity.this, PerfilUsuarioActivity.class));
             } else if (id == R.id.nav_logout) {
@@ -62,71 +69,155 @@ public class VentaJugadoresActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-
             drawerLayout.closeDrawers();
             return true;
         });
 
-        // Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_my_team);
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_home) {
-                startActivity(new Intent(VentaJugadoresActivity.this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
             } else if (id == R.id.nav_leagues) {
-                startActivity(new Intent(VentaJugadoresActivity.this, LigasActivity.class));
+                startActivity(new Intent(this, LigasActivity.class));
                 return true;
             } else if (id == R.id.nav_my_team) {
-                startActivity(new Intent(VentaJugadoresActivity.this, EquipoActivity.class));
+                startActivity(new Intent(this, EquipoActivity.class));
                 return true;
             } else if (id == R.id.nav_market) {
-                startActivity(new Intent(VentaJugadoresActivity.this, MercadoActivity.class));
+                startActivity(new Intent(this, MercadoActivity.class));
                 return true;
             }
             return false;
         });
 
-        // Inicializamos el TextView para monedas
-        tvMonedas = findViewById(R.id.textViewMonedas);
-        cargarMonedas();
+        recyclerViewVenta = findViewById(R.id.recyclerViewVenta);
+        recyclerViewVenta.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new JugadorAdapter(listaJugadoresUsuario, R.layout.item_jugador_2, true, jugador -> venderJugador(jugador));
+        recyclerViewVenta.setAdapter(adapter);
+
+
+        textViewMonedas = findViewById(R.id.textViewMonedas);
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userEquipoRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid).child("equipoUsuario");
+        userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
+
+        cargarJugadoresUsuario();
+        cargarMonedasUsuario();
     }
 
-    private void cargarMonedas() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "No hay usuario logueado", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String uid = user.getUid();
-        DatabaseReference refMonedas = FirebaseDatabase.getInstance()
-                .getReference("usuarios").child(uid).child("monedas");
-
-        refMonedas.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void cargarJugadoresUsuario() {
+        userEquipoRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Long monedas = snapshot.getValue(Long.class);
-                if (monedas == null) {
-                    tvMonedas.setText("Aún no perteneces a una liga");
-                } else {
-                    tvMonedas.setText("Monedas: " + monedas);
+                listaJugadoresUsuario.clear();
+                for (DataSnapshot jugadorSnap : snapshot.getChildren()) {
+                    Jugador jugador = jugadorSnap.getValue(Jugador.class);
+                    if (jugador != null) {
+                        jugador.setId(jugadorSnap.getKey());
+                        listaJugadoresUsuario.add(jugador);
+                    }
+                }
+
+                // Ordenar por posición: portero, defensa, centrocampista, delantero
+                Collections.sort(listaJugadoresUsuario, new Comparator<Jugador>() {
+                    @Override
+                    public int compare(Jugador j1, Jugador j2) {
+                        return Integer.compare(prioridadPosicion(j1.getPosicion()), prioridadPosicion(j2.getPosicion()));
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+
+                if (listaJugadoresUsuario.isEmpty()) {
+                    Toast.makeText(VentaJugadoresActivity.this, "No tienes jugadores en tu equipo", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(VentaJugadoresActivity.this, "Error al cargar monedas: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(VentaJugadoresActivity.this, "Error al cargar tus jugadores", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        toggle.syncState();
+    private int prioridadPosicion(String posicion) {
+        if (posicion == null) return 999; // al final si es nulo
+        switch (posicion.toLowerCase()) {
+            case "portero":
+                return 1;
+            case "defensa":
+                return 2;
+            case "centrocampista":
+                return 3;
+            case "delantero":
+                return 4;
+            default:
+                return 999;
+        }
     }
+
+    private void cargarMonedasUsuario() {
+        userRef.child("monedas").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Long monedas = snapshot.getValue(Long.class);
+                    if (monedas != null) {
+                        textViewMonedas.setText("Monedas: " + monedas);
+                    } else {
+                        textViewMonedas.setText("Monedas: 0");
+                    }
+                } else {
+                    textViewMonedas.setText("Monedas no disponibles");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                textViewMonedas.setText("Error al cargar monedas");
+            }
+        });
+    }
+
+    public void venderJugador(Jugador jugador) {
+        new android.app.AlertDialog.Builder(VentaJugadoresActivity.this)
+                .setTitle("Confirmar venta")
+                .setMessage("¿Estás seguro de que quieres vender a " + jugador.getNombre() + "?")
+                .setPositiveButton("Vender", (dialog, which) -> {
+                    String jugadorId = jugador.getId();
+                    if (jugadorId == null) {
+                        Toast.makeText(VentaJugadoresActivity.this, "Error: jugador sin ID", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                    DatabaseReference refEquipoUsuario = FirebaseDatabase.getInstance()
+                            .getReference("usuarios").child(uid).child("equipoUsuario").child(jugadorId);
+
+                    DatabaseReference refJugador = FirebaseDatabase.getInstance()
+                            .getReference("jugadores").child(jugadorId).child("estado");
+
+                    refEquipoUsuario.removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            refJugador.setValue("disponible").addOnCompleteListener(taskEstado -> {
+                                if (taskEstado.isSuccessful()) {
+                                    Toast.makeText(VentaJugadoresActivity.this, "Jugador vendido correctamente", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(VentaJugadoresActivity.this, "Error al actualizar estado del jugador", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(VentaJugadoresActivity.this, "Error al eliminar jugador del equipo", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
 }

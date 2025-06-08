@@ -12,21 +12,26 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorViewHolder> {
 
-    private final List<Jugador> listaJugadores;
-    private final boolean mostrarBotonComprar;
+    public interface OnJugadorButtonClickListener {
+        void onButtonClick(Jugador jugador);
+    }
 
-    public JugadorAdapter(List<Jugador> listaJugadores, boolean mostrarBotonComprar) {
+    private final List<Jugador> listaJugadores;
+    private final int layoutResId;
+    private final OnJugadorButtonClickListener listener;
+    private final boolean mostrarBoton;
+
+    public JugadorAdapter(List<Jugador> listaJugadores, int layoutResId, boolean mostrarBoton, OnJugadorButtonClickListener listener) {
         this.listaJugadores = listaJugadores;
-        this.mostrarBotonComprar = mostrarBotonComprar;
+        this.layoutResId = layoutResId;
+        this.mostrarBoton = mostrarBoton;
+        this.listener = listener;
     }
 
     // Mapa fijo: equipo → camiseta (todos los equipos tienen una)
@@ -45,7 +50,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
     @Override
     public JugadorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_jugador, parent, false);
+                .inflate(layoutResId, parent, false);
         return new JugadorViewHolder(itemView);
     }
 
@@ -59,7 +64,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
         holder.tvPrecio.setText("Precio: " + jugador.getPrecio());
         holder.tvPuntos.setText("Puntos: " + jugador.getPuntos());
 
-        String estado = jugador.getEstado().toLowerCase();
+        String estado = jugador.getEstado() != null ? jugador.getEstado().toLowerCase() : "";
         holder.tvEstado.setText(jugador.getEstado());
 
         switch (estado) {
@@ -82,16 +87,15 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
             holder.imgCamiseta.setImageResource(camisetaRes);
         }
 
-        // Mostrar u ocultar botón Comprar
-        holder.btnComprar.setVisibility(mostrarBotonComprar ? View.VISIBLE : View.GONE);
+        // Mostrar u ocultar botón según flag
+        holder.btnComprar.setVisibility(mostrarBoton ? View.VISIBLE : View.GONE);
 
-        if (mostrarBotonComprar) {
+        if (mostrarBoton) {
             holder.btnComprar.setOnClickListener(v -> {
-                // Llamar a comprarJugador del contexto si es MercadoActivity
-                if (holder.itemView.getContext() instanceof MercadoActivity) {
-                    ((MercadoActivity) holder.itemView.getContext()).comprarJugador(jugador);
+                if (listener != null) {
+                    listener.onButtonClick(jugador);
                 } else {
-                    Toast.makeText(holder.itemView.getContext(), "No se puede comprar aquí", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(holder.itemView.getContext(), "No hay acción definida", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
