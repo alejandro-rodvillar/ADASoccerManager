@@ -24,6 +24,41 @@
             app:navigationIcon="@drawable/menu_hamburguesa"
             app:title="@string/app_name2" />
 
+        <LinearLayout
+            android:id="@+id/layoutSinLiga"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            android:visibility="gone">
+
+            <!-- Texto si no pertenece a ninguna liga -->
+            <TextView
+                android:id="@+id/noLeagueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_league_text"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:padding="12dp"
+                android:visibility="gone" />
+
+            <!-- Botón para ir a MainActivity -->
+            <Button
+                android:id="@+id/joinOrCreateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/join_or_create_button"
+                android:backgroundTint="#77C448"
+                android:textColor="#3E4044"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tv_alineacion"
             android:layout_width="wrap_content"

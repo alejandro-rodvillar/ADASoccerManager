@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -18,6 +17,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class UnirseLiga extends AppCompatActivity {
@@ -130,7 +135,6 @@ public class UnirseLiga extends AppCompatActivity {
                             String uid = currentUser.getUid();
                             String teamId = UUID.randomUUID().toString().substring(0, 8);
 
-                            // Añadir el usuario a la liga
                             dbRef.child("ligas").child(ligaKey).child("jugadores").child(uid).setValue(true)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
@@ -143,8 +147,7 @@ public class UnirseLiga extends AppCompatActivity {
                                                             usuarioRef.child("monedas").setValue(100000)
                                                                     .addOnCompleteListener(task3 -> {
                                                                         if (task3.isSuccessful()) {
-                                                                            Toast.makeText(UnirseLiga.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();
-                                                                            finish();
+                                                                            asignarJugadoresIniciales(uid);
                                                                         } else {
                                                                             Toast.makeText(UnirseLiga.this, "Error al asignar monedas al usuario", Toast.LENGTH_SHORT).show();
                                                                         }
@@ -167,5 +170,104 @@ public class UnirseLiga extends AppCompatActivity {
                         Toast.makeText(UnirseLiga.this, "Error al conectar con la base de datos", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void asignarJugadoresIniciales(String userId) {
+        DatabaseReference usuariosRef = dbRef.child("usuarios").child(userId).child("nombre");
+        DatabaseReference jugadoresRef = dbRef.child("jugadores");
+        DatabaseReference equipoUsuarioRef = dbRef.child("usuarios").child(userId).child("equipoUsuario");
+
+        usuariosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot nombreSnapshot) {
+                final String nombreUserFinal = nombreSnapshot.getValue(String.class) != null
+                        ? nombreSnapshot.getValue(String.class)
+                        : "Usuario desconocido";
+
+                jugadoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<DataSnapshot> disponibles = new ArrayList<>();
+                        for (DataSnapshot jugador : snapshot.getChildren()) {
+                            String estado = jugador.child("estado").getValue(String.class);
+                            if (estado != null && (estado.equals("disponible"))) {
+                                disponibles.add(jugador);
+                            }
+                        }
+
+                        Map<String, List<DataSnapshot>> porPosicion = new HashMap<>();
+                        porPosicion.put("portero", new ArrayList<>());
+                        porPosicion.put("defensa", new ArrayList<>());
+                        porPosicion.put("centrocampista", new ArrayList<>());
+                        porPosicion.put("delantero", new ArrayList<>());
+
+                        for (DataSnapshot jugador : disponibles) {
+                            String posicion = jugador.child("posicion").getValue(String.class);
+                            if (posicion != null) {
+                                String key = posicion.toLowerCase();
+                                if (porPosicion.containsKey(key)) {
+                                    porPosicion.get(key).add(jugador);
+                                }
+                            }
+                        }
+
+                        Random random = new Random();
+                        List<DataSnapshot> seleccionados = new ArrayList<>();
+                        try {
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("portero"), 1, random));
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("defensa"), 4, random));
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("centrocampista"), 3, random));
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("delantero"), 3, random));
+                        } catch (IllegalArgumentException e) {
+                            Toast.makeText(UnirseLiga.this, "No hay suficientes jugadores disponibles", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        for (DataSnapshot jugador : seleccionados) {
+                            String jugadorId = jugador.getKey();
+                            if (jugadorId != null) {
+                                // Actualizar estado con el nombre real del usuario
+                                dbRef.child("jugadores").child(jugadorId).child("estado")
+                                        .setValue("en propiedad de " + nombreUserFinal);
+
+                                // Añadir a la subcolección equipoUsuario con datos reales del jugador
+                                Jugador jugadorObj = jugador.getValue(Jugador.class);
+                                if (jugadorObj != null) {
+                                    equipoUsuarioRef.child(jugadorId).setValue(jugadorObj);
+                                }
+                            }
+                        }
+
+                        Toast.makeText(UnirseLiga.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "Error al obtener jugadores: " + error.getMessage());
+                        Toast.makeText(UnirseLiga.this, "Error al cargar jugadores", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al obtener nombre del usuario: " + error.getMessage());
+                Toast.makeText(UnirseLiga.this, "Error al cargar datos del usuario", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+
+
+
+    private List<DataSnapshot> seleccionarAleatorios(List<DataSnapshot> lista, int cantidad, Random random) {
+        if (lista.size() < cantidad) {
+            throw new IllegalArgumentException("No hay suficientes elementos");
+        }
+        Collections.shuffle(lista, random);
+        return lista.subList(0, cantidad);
     }
 }
