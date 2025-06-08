@@ -31,6 +31,7 @@ public class EquipoActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+    private TextView tvMonedas;
 
     private static final Map<String, Integer> camisetaPorEquipo = new HashMap<String, Integer>() {{
         put("Rayo Glacial", R.drawable.camiseta_azul);
@@ -102,21 +103,20 @@ public class EquipoActivity extends AppCompatActivity {
             return false;
         });
 
-        // Configurar TextView "vender jugador"
         TextView tvVenderJugador = findViewById(R.id.tv_vender_jugador);
         if (tvVenderJugador != null) {
-            // Subrayar texto
             tvVenderJugador.setPaintFlags(tvVenderJugador.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-            // Color ya puesto en XML (#78C649), si quieres cambiarlo aquí también:
-            // tvVenderJugador.setTextColor(Color.parseColor("#78C649"));
-
-            // Acción click para abrir actividad VentaJugadoresActivity
             tvVenderJugador.setOnClickListener(v -> {
                 Intent intent = new Intent(EquipoActivity.this, VentaJugadoresActivity.class);
                 startActivity(intent);
             });
         }
+
+        // Inicializamos el TextView para monedas
+        tvMonedas = findViewById(R.id.textViewMonedas);
+
+        cargarMonedas();
 
         cargarJugadores();
     }
@@ -133,6 +133,34 @@ public class EquipoActivity extends AppCompatActivity {
             return "mediocampista";
         }
         return posicion;
+    }
+
+    private void cargarMonedas() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "No hay usuario logueado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = user.getUid();
+        DatabaseReference refMonedas = FirebaseDatabase.getInstance()
+                .getReference("usuarios").child(uid).child("monedas");
+
+        refMonedas.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Long monedas = snapshot.getValue(Long.class);
+                if (monedas == null) {
+                    monedas = 0L;
+                }
+                tvMonedas.setText("Monedas: " + monedas);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(EquipoActivity.this, "Error al cargar monedas: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void cargarJugadores() {
