@@ -144,7 +144,7 @@ public class UnirseLiga extends AppCompatActivity {
                                                         if (task2.isSuccessful()) {
                                                             usuarioRef.child("equipoUsuario").setValue(teamId);
                                                             usuarioRef.child("puntos").setValue(0);
-                                                            usuarioRef.child("monedas").setValue(100000)
+                                                            usuarioRef.child("monedas").setValue(30000)
                                                                     .addOnCompleteListener(task3 -> {
                                                                         if (task3.isSuccessful()) {
                                                                             asignarJugadoresIniciales(uid);
@@ -257,11 +257,6 @@ public class UnirseLiga extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
 
     private List<DataSnapshot> seleccionarAleatorios(List<DataSnapshot> lista, int cantidad, Random random) {
         if (lista.size() < cantidad) {

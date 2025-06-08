@@ -3,9 +3,11 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,8 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class CrearLigaActivity extends AppCompatActivity {
@@ -31,6 +37,8 @@ public class CrearLigaActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private FirebaseUser currentUser;
     private EditText etLeagueName, etParticipants;
+    private DatabaseReference dbRef;
+    private static final String TAG = "CrearLiga";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,8 @@ public class CrearLigaActivity extends AppCompatActivity {
 
         // Obtiene el usuario actual
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        dbRef = FirebaseDatabase.getInstance().getReference();
 
         // Asocia el botón de crear liga con la función crearLiga()
         findViewById(R.id.btnSubmit).setOnClickListener(v -> crearLiga());
@@ -175,9 +185,12 @@ public class CrearLigaActivity extends AppCompatActivity {
 
                             nuevaLigaRef.setValue(ligaData).addOnSuccessListener(unused -> {
                                 userRef.child("ligaId").setValue(ligaId);
-                                userRef.child("monedas").setValue(100000);
+                                userRef.child("monedas").setValue(30000);
                                 userRef.child("puntos").setValue(0);
                                 userRef.child("equipoUsuario").setValue(teamId);
+
+                                asignarJugadoresIniciales(uid);
+
                                 Toast.makeText(CrearLigaActivity.this, "Liga creada con éxito. Código: " + ligaId, Toast.LENGTH_LONG).show();
                                 etLeagueName.setText("");
                                 etParticipants.setText("");
@@ -201,5 +214,99 @@ public class CrearLigaActivity extends AppCompatActivity {
                 Toast.makeText(CrearLigaActivity.this, "Error al verificar ligas: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void asignarJugadoresIniciales(String userId) {
+        DatabaseReference usuariosRef = dbRef.child("usuarios").child(userId).child("nombre");
+        DatabaseReference jugadoresRef = dbRef.child("jugadores");
+        DatabaseReference equipoUsuarioRef = dbRef.child("usuarios").child(userId).child("equipoUsuario");
+
+        usuariosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot nombreSnapshot) {
+                final String nombreUserFinal = nombreSnapshot.getValue(String.class) != null
+                        ? nombreSnapshot.getValue(String.class)
+                        : "Usuario desconocido";
+
+                jugadoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<DataSnapshot> disponibles = new ArrayList<>();
+                        for (DataSnapshot jugador : snapshot.getChildren()) {
+                            String estado = jugador.child("estado").getValue(String.class);
+                            if (estado != null && (estado.equals("disponible"))) {
+                                disponibles.add(jugador);
+                            }
+                        }
+
+                        Map<String, List<DataSnapshot>> porPosicion = new HashMap<>();
+                        porPosicion.put("portero", new ArrayList<>());
+                        porPosicion.put("defensa", new ArrayList<>());
+                        porPosicion.put("centrocampista", new ArrayList<>());
+                        porPosicion.put("delantero", new ArrayList<>());
+
+                        for (DataSnapshot jugador : disponibles) {
+                            String posicion = jugador.child("posicion").getValue(String.class);
+                            if (posicion != null) {
+                                String key = posicion.toLowerCase();
+                                if (porPosicion.containsKey(key)) {
+                                    porPosicion.get(key).add(jugador);
+                                }
+                            }
+                        }
+
+                        Random random = new Random();
+                        List<DataSnapshot> seleccionados = new ArrayList<>();
+                        try {
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("portero"), 1, random));
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("defensa"), 4, random));
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("centrocampista"), 3, random));
+                            seleccionados.addAll(seleccionarAleatorios(porPosicion.get("delantero"), 3, random));
+                        } catch (IllegalArgumentException e) {
+                            Toast.makeText(CrearLigaActivity.this, "No hay suficientes jugadores disponibles", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        for (DataSnapshot jugador : seleccionados) {
+                            String jugadorId = jugador.getKey();
+                            if (jugadorId != null) {
+                                // Actualizar estado con el nombre real del usuario
+                                dbRef.child("jugadores").child(jugadorId).child("estado")
+                                        .setValue("en propiedad de " + nombreUserFinal);
+
+                                // Añadir a la subcolección equipoUsuario con datos reales del jugador
+                                Jugador jugadorObj = jugador.getValue(Jugador.class);
+                                if (jugadorObj != null) {
+                                    equipoUsuarioRef.child(jugadorId).setValue(jugadorObj);
+                                }
+                            }
+                        }
+
+                        Toast.makeText(CrearLigaActivity.this, "Te has unido a la liga correctamente", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "Error al obtener jugadores: " + error.getMessage());
+                        Toast.makeText(CrearLigaActivity.this, "Error al cargar jugadores", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al obtener nombre del usuario: " + error.getMessage());
+                Toast.makeText(CrearLigaActivity.this, "Error al cargar datos del usuario", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private List<DataSnapshot> seleccionarAleatorios(List<DataSnapshot> lista, int cantidad, Random random) {
+        if (lista.size() < cantidad) {
+            throw new IllegalArgumentException("No hay suficientes elementos");
+        }
+        Collections.shuffle(lista, random);
+        return lista.subList(0, cantidad);
     }
 }
