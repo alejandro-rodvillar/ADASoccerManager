@@ -151,9 +151,10 @@ public class EquipoActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Long monedas = snapshot.getValue(Long.class);
                 if (monedas == null) {
-                    monedas = 0L;
+                    tvMonedas.setText("Aún no perteneces a una liga");
+                } else {
+                    tvMonedas.setText("Monedas: " + monedas);
                 }
-                tvMonedas.setText("Monedas: " + monedas);
             }
 
             @Override
