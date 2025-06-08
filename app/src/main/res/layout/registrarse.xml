@@ -138,7 +138,7 @@
             android:layout_marginEnd="40dp"
             android:layout_marginBottom="95dp"
             android:backgroundTint="#77C549"
-            android:text="@string/btn_volver"
+            android:text="@string/btnvolver"
             android:textColor="#3E4044"
             android:textColorLink="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"

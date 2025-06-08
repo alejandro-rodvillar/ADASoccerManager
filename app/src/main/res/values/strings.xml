@@ -1,6 +1,6 @@
 <resources>
     <!--PANTALLA DE LOGIN-->
-    <string name="app_name">ADA Soccer League</string>
+    <string name="app_name">ADA Soccer Manager</string>
     <string name="etusuario">Usuario o dirección de correo</string>
     <string name="etcontraseña">Contraseña</string>
     <string name="btniniciosesion">Iniciar sesión</string>
@@ -27,14 +27,12 @@
     <string name="terminos_condiciones"><![CDATA[Acepto los Términos y Condiciones]]></string>
 
     <!-- CREAR LIGA-->
-    <string name="app_name_toolbar">ADA Soccer Manager</string>
     <string name="title_new_league">NUEVA LIGA</string>
     <string name="hint_league_name">Nombre de la liga</string>
     <string name="hint_participants_number">Número de participantes</string>
     <string name="button_create">Crear</string>
 
     <!-- EQUIPO-->
-    <string name="app_name2">ADA Soccer Manager</string>
     <string name="alineacion">ALINEACIÓN</string>
     <string name="vender_jugador_pregunta">¿Quieres vender a algún jugador? Pulsa aquí</string>
     <string name="portero">Portero</string>
@@ -62,7 +60,6 @@
     <string name="camiseta_delantero3_descripcion">Camiseta delantero 3</string>
 
     <!-- GESTION LIGA-->
-    <string name="app_title">ADA Soccer Manager</string>
     <string name="gestion_liga_titulo">GESTIÓN DE LIGA</string>
     <string name="nombre_liga">Nombre de la Liga: </string>
     <string name="creador_liga">Creador: </string>
@@ -82,7 +79,6 @@
     <string name="sin_resultados_text">No se encontraron jugadores</string>
 
     <!-- MAIN-->
-    <string name="ada_soccer_manager_title">ADA Soccer Manager</string>
     <string name="bienvenido_text">BIENVENIDO</string>
     <string name="crear_nueva_liga">Crear nueva Liga</string>
     <string name="unirse_a_liga">Unirse a Liga</string>
@@ -92,12 +88,10 @@
     <string name="liga_fantasy_title">Liga Fantasy</string>
 
     <!-- MERCADO-->
-    <string name="app_namemercado">ADA Soccer Manager</string>
     <string name="loading_remaining_time">Cargando tiempo restante...</string>
     <string name="loading_coins">Cargando monedas...</string>
 
     <!-- PERFIL USUARIO-->
-    <string name="app_nameusuario">ADA Soccer Manager</string>
     <string name="profile_title">PERFIL DE USUARIO</string>
     <string name="hint_enter_name">Introduce tu nombre</string>
     <string name="btn_save">Guardar</string>
@@ -150,13 +144,11 @@
     <string name="accept_button">Aceptar</string>
 
     <!-- UNIRSE LIGAS-->
-    <string name="app_name_toolbarligas">ADA Soccer Manager</string>
     <string name="tv_join_league">Introduce el código de la liga</string>
     <string name="hint_league_code">Código de la liga</string>
     <string name="btn_join_league">Unirse a la liga</string>
 
     <!-- VENTA JUGADORES-->
-    <string name="app_name_toolbarventa">ADA Soccer Manager</string>
     <string name="btn_test_text">prueba</string>
 
     <!-- HEADER LAYOUT-->
@@ -189,7 +181,6 @@
     <string name="hint_nombre_usuario">Nombre de usuario</string>
     <string name="hint_email">E-Mail</string>
     <string name="hint_contrasena">Contraseña</string>
-    <string name="btn_volver">Volver</string>
     <string name="btn_registrarse">Registrarse</string>
 
 </resources>

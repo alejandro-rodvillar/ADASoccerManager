@@ -10,7 +10,7 @@ function getRandomPoints(min, max) {
 }
 
 exports.actualizarPuntosJugadores = functions.pubsub
-  .schedule("every 1 minutes") 
+  .schedule("every 120 hours") 
   .onRun(async (context) => {
     console.log("Inicio de actualización de puntos de jugadores");
 

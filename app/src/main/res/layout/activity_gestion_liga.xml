@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:navigationIcon="@drawable/menu_hamburguesa"
-            app:title="@string/app_title" />
+            app:title="@string/app_name" />
 
         <!-- Contenido scrollable -->
         <ScrollView
