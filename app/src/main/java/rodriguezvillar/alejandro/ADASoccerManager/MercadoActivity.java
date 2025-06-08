@@ -48,7 +48,8 @@ public class MercadoActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Runnable updateTimerRunnable;
 
-    private static final long TIEMPO_ESPERA_MS = 2 * 60 * 1000; // 2 minutos
+    private static final long TIEMPO_ESPERA_MS = 60 * 60 * 1000; // 1 hora
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

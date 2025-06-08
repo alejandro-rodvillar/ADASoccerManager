@@ -202,11 +202,43 @@ public class VentaJugadoresActivity extends AppCompatActivity {
                     DatabaseReference refJugador = FirebaseDatabase.getInstance()
                             .getReference("jugadores").child(jugadorId).child("estado");
 
+                    DatabaseReference refMonedasUsuario = FirebaseDatabase.getInstance()
+                            .getReference("usuarios").child(uid).child("monedas");
+
                     refEquipoUsuario.removeValue().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             refJugador.setValue("disponible").addOnCompleteListener(taskEstado -> {
                                 if (taskEstado.isSuccessful()) {
-                                    Toast.makeText(VentaJugadoresActivity.this, "Jugador vendido correctamente", Toast.LENGTH_SHORT).show();
+                                    // Aquí actualizamos las monedas del usuario
+                                    refMonedasUsuario.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            long monedasActuales = 0;
+                                            if (snapshot.exists()) {
+                                                Long valor = snapshot.getValue(Long.class);
+                                                if (valor != null) {
+                                                    monedasActuales = valor;
+                                                }
+                                            }
+                                            long precioJugador = jugador.getPrecio(); // Asegúrate que getPrecio() devuelve long o int
+                                            long monedasNuevas = monedasActuales + precioJugador;
+
+                                            refMonedasUsuario.setValue(monedasNuevas).addOnCompleteListener(taskUpdate -> {
+                                                if (taskUpdate.isSuccessful()) {
+                                                    textViewMonedas.setText("Monedas: " + monedasNuevas);
+                                                    Toast.makeText(VentaJugadoresActivity.this, "Jugador vendido correctamente", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(VentaJugadoresActivity.this, "Error al actualizar monedas", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(VentaJugadoresActivity.this, "Error al leer monedas", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
                                 } else {
                                     Toast.makeText(VentaJugadoresActivity.this, "Error al actualizar estado del jugador", Toast.LENGTH_SHORT).show();
                                 }
@@ -219,5 +251,4 @@ public class VentaJugadoresActivity extends AppCompatActivity {
                 .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
 }
