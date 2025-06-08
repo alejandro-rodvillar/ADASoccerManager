@@ -251,6 +251,46 @@ public class MercadoActivity extends AppCompatActivity {
                     return;
                 }
 
+                // CONTAR POSICIONES
+                int porteros = 0, defensas = 0, centrocampistas = 0, delanteros = 0;
+                DataSnapshot equipoSnapshot = snapshot.child("equipoUsuario");
+
+                for (DataSnapshot jugadorSnap : equipoSnapshot.getChildren()) {
+                    String posicion = jugadorSnap.child("posicion").getValue(String.class);
+                    if (posicion == null) continue;
+
+                    switch (posicion.toLowerCase()) {
+                        case "portero":
+                            porteros++;
+                            break;
+                        case "defensa":
+                            defensas++;
+                            break;
+                        case "centrocampista":
+                            centrocampistas++;
+                            break;
+                        case "delantero":
+                            delanteros++;
+                            break;
+                    }
+                }
+
+                // VERIFICAR SI LA POSICIÓN ESTÁ COMPLETA
+                String posicionJugador = jugadorComprado.getPosicion();
+                if (posicionJugador != null) {
+                    boolean posicionLlena =
+                            (posicionJugador.equalsIgnoreCase("portero") && porteros >= 1) ||
+                                    (posicionJugador.equalsIgnoreCase("defensa") && defensas >= 4) ||
+                                    (posicionJugador.equalsIgnoreCase("centrocampista") && centrocampistas >= 3) ||
+                                    (posicionJugador.equalsIgnoreCase("delantero") && delanteros >= 3);
+
+                    if (posicionLlena) {
+                        Toast.makeText(MercadoActivity.this, "Ya tienes suficientes jugadores en la posición: " + posicionJugador, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+                // CONTINÚA CON LA COMPRA
                 DatabaseReference jugadorRef = FirebaseDatabase.getInstance().getReference("jugadores").child(jugadorComprado.getId());
 
                 jugadorRef.runTransaction(new Transaction.Handler() {
@@ -280,13 +320,11 @@ public class MercadoActivity extends AppCompatActivity {
                         // Restar monedas
                         userRef.child("monedas").setValue(monedas - jugadorComprado.getPrecio());
 
-                        // 🔧 Actualizar el estado del objeto local
+                        // Añadir jugador al equipo
                         jugadorComprado.setEstado("en propiedad de " + nombreUsuario);
-
-                        // Añadir jugador al equipo del usuario
                         userRef.child("equipoUsuario").child(jugadorComprado.getId()).setValue(jugadorComprado);
 
-                        // Remover jugador del mercado
+                        // Quitar del mercado
                         mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
