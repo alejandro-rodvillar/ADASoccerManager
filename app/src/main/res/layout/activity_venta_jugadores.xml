@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -22,7 +21,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:title="@string/app_name" />
 
-        <!-- Lista con scroll -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollVentaJugadores"
             android:layout_width="match_parent"
@@ -48,7 +46,6 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <!-- TEXTVIEW MONEDAS FIJO -->
         <TextView
             android:id="@+id/textViewMonedas"
             android:layout_width="0dp"
@@ -63,7 +60,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Bottom Navigation -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"

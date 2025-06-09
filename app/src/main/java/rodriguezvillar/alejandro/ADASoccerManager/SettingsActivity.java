@@ -3,7 +3,6 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        // Controles de los clics en el menú lateral
+        // controles de los clics en el menu lateral
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -60,10 +59,9 @@ public class SettingsActivity extends AppCompatActivity {
                 if (id == R.id.nav_profile) {
                     startActivity(new Intent(SettingsActivity.this, PerfilUsuarioActivity.class));
                 } else if (id == R.id.nav_logout) {
-                    // Cuanndo se cierra la sesión se vuelve a la pantalla de Login
+                    // cuando se cierra la sesion se vuelve a la pantalla de Login
                     Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
                     startActivity(intent);
-                    //finish(); // Se cierra la actividad actual para que el usuario no pueda regresar
                 }
                 drawerLayout.closeDrawers();
                 return true;

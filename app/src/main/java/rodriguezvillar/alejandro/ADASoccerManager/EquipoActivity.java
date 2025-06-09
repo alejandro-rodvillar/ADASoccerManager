@@ -115,10 +115,10 @@ public class EquipoActivity extends AppCompatActivity {
             });
         }
 
-        // Inicializamos el TextView para monedas
+        // inicializar el TextView para monedas
         tvMonedas = findViewById(R.id.textViewMonedas);
 
-        // Verificamos si el usuario está en una liga para mostrar u ocultar el TextView de vender jugador
+        // verificar si el usuario está en una liga para mostrar u ocultar el TextView de vender jugador
         verificarLigaUsuario();
 
         cargarMonedas();
@@ -129,7 +129,7 @@ public class EquipoActivity extends AppCompatActivity {
     private void verificarLigaUsuario() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            // Usuario no logueado, ocultar
+            // usuario no logueado, ocultar
             if (tvVenderJugador != null) {
                 tvVenderJugador.setVisibility(View.GONE);
             }
@@ -157,7 +157,7 @@ public class EquipoActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // En caso de error, ocultamos para prevenir acceso indebido
+                // en caso de error, ocultar para prevenir acceso indebido
                 if (tvVenderJugador != null) {
                     tvVenderJugador.setVisibility(View.GONE);
                 }

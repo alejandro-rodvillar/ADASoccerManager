@@ -57,7 +57,6 @@ public class ListaJugadoresFirebaseActivity extends AppCompatActivity {
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
         }
 
         etBuscarJugador = findViewById(R.id.etBuscarJugador);

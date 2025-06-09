@@ -18,7 +18,7 @@ public class PantallaDeEspera extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Se redirige a la pantalla de login
+                // se redirige a la pantalla de login
                 Intent intent = new Intent(PantallaDeEspera.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

@@ -48,7 +48,7 @@ public class ReestablecerContrasena extends AppCompatActivity {
                 return;
             }
 
-            // Buscar en Realtime Database por el campo "email"
+            // buscar en Realtime Database por el campo "email"
             usuariosRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {

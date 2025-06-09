@@ -6,7 +6,6 @@
     android:padding="12dp"
     android:gravity="center_vertical">
 
-    <!-- Posición -->
     <TextView
         android:id="@+id/tvPosicion"
         android:layout_width="40dp"
@@ -16,7 +15,6 @@
         android:textStyle="bold"
         android:gravity="center" />
 
-    <!-- Nombre usuario -->
     <TextView
         android:id="@+id/tvNombre"
         android:layout_width="0dp"
@@ -27,7 +25,6 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp" />
 
-    <!-- Puntos -->
     <TextView
         android:id="@+id/tvPuntos"
         android:layout_width="60dp"

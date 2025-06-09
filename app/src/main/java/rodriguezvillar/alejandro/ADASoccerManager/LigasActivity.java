@@ -3,7 +3,6 @@ package rodriguezvillar.alejandro.ADASoccerManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import androidx.annotation.NonNull;
@@ -15,12 +14,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class LigasActivity extends AppCompatActivity {
@@ -54,15 +51,15 @@ public class LigasActivity extends AppCompatActivity {
         noLeagueTextView = findViewById(R.id.noLeagueTextView);
         joinOrCreateButton = findViewById(R.id.joinOrCreateButton);
 
-        // Configura Toolbar, Drawer y BottomNavigation igual que antes
+        // configura Toolbar, Drawer y BottomNavigation
         setupToolbarAndNavigation();
 
-        // Configurar adaptador para la lista
+        // configurar adaptador para la lista
         adapter = new PlayerAdapter();
         leagueListView.setAdapter(adapter);
 
         joinOrCreateButton.setOnClickListener(v -> {
-            // Redirigir a MainActivity para crear o unirse a una liga
+            // redirigir a MainActivity para crear o unirse a una liga
             startActivity(new Intent(LigasActivity.this, MainActivity.class));
             finish();
         });
@@ -122,18 +119,18 @@ public class LigasActivity extends AppCompatActivity {
             return;
         }
 
-        // Escuchar ligaId del usuario actual en tiempo real
+        // escuchar ligaId del usuario actual en tiempo real
         usuariosRef.child(currentUserId).child("ligaId").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 currentLigaId = snapshot.getValue(String.class);
                 if (currentLigaId == null || currentLigaId.isEmpty()) {
-                    // No pertenece a ninguna liga
+                    // no pertenece a ninguna liga
                     leagueListView.setVisibility(View.GONE);
                     noLeagueTextView.setVisibility(View.VISIBLE);
                     joinOrCreateButton.setVisibility(View.VISIBLE);
                 } else {
-                    // Pertenece a una liga, mostrar lista
+                    // pertenece a una liga, mostrar lista
                     leagueListView.setVisibility(View.VISIBLE);
                     noLeagueTextView.setVisibility(View.GONE);
                     joinOrCreateButton.setVisibility(View.GONE);
@@ -161,7 +158,7 @@ public class LigasActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Por cada UID jugador, obtener info de usuario
+                // por cada UID jugador, obtener info de usuario
                 List<String> jugadorUids = new ArrayList<>();
                 for (DataSnapshot jugadorSnap : jugadoresSnapshot.getChildren()) {
                     String jugadorUid = jugadorSnap.getKey();
@@ -175,7 +172,7 @@ public class LigasActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Leer info de usuarios en paralelo
+                // leer info de usuarios en paralelo
                 fetchPlayersInfo(jugadorUids);
             }
 
@@ -206,7 +203,7 @@ public class LigasActivity extends AppCompatActivity {
 
                     loadedCount[0]++;
                     if (loadedCount[0] == totalPlayers) {
-                        // Todos cargados, ordenar y actualizar UI
+                        // todos cargados, ordenar y actualizar UI
                         Collections.sort(playersList, (p1, p2) -> Integer.compare(p2.puntos, p1.puntos));
                         adapter.notifyDataSetChanged();
                     }
@@ -225,7 +222,7 @@ public class LigasActivity extends AppCompatActivity {
         }
     }
 
-    // Clase interna para representar un jugador
+    // clase interna para representar un jugador
     private static class Player {
         String uid;
         String nombre;
@@ -238,7 +235,7 @@ public class LigasActivity extends AppCompatActivity {
         }
     }
 
-    // Adaptador personalizado para ListView
+    // adaptador personalizado para ListView
     private class PlayerAdapter extends BaseAdapter {
 
         @Override
@@ -266,13 +263,13 @@ public class LigasActivity extends AppCompatActivity {
             TextView tv = (TextView) view.findViewById(android.R.id.text1);
             Player player = playersList.get(position);
 
-            // Mostrar posición, nombre y puntos
+            // mostrar posición, nombre y puntos
             String texto = (position + 1) + ". " + player.nombre + " - " + player.puntos + " Puntos";
             tv.setText(texto);
 
-            // Resaltar al usuario actual
+            // resaltar al usuario actual
             if (player.uid.equals(currentUserId)) {
-                tv.setTextColor(Color.parseColor("#FF4081")); // Color rosa/fucsia por ejemplo
+                tv.setTextColor(Color.parseColor("#FF4081")); // color rosa/fucsia por ejemplo
                 tv.setTypeface(null, android.graphics.Typeface.BOLD);
             } else {
                 tv.setTextColor(Color.BLACK);

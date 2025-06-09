@@ -42,7 +42,7 @@ public class GestionLigaActivity extends AppCompatActivity {
 
         uid = currentUser.getUid();
 
-        // Enlaces UI
+        // enlaces UI
         tvNombreLiga = findViewById(R.id.tvNombreLiga);
         tvCreadorLiga = findViewById(R.id.tvCreadorLiga);
         tvParticipantes = findViewById(R.id.tvParticipantes);
@@ -51,7 +51,7 @@ public class GestionLigaActivity extends AppCompatActivity {
         btnSalirLiga = findViewById(R.id.btnSalirLiga);
         btnEliminarLiga = findViewById(R.id.btnEliminarLiga);
 
-        // Buscar liga a la que pertenece el usuario
+        // buscar liga a la que pertenece el usuario
         mDatabase.child("ligas").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -144,9 +144,6 @@ public class GestionLigaActivity extends AppCompatActivity {
             if (id == R.id.nav_profile) {
                 startActivity(new Intent(this, PerfilUsuarioActivity.class));
             }
-//            else if (id == R.id.nav_settings) {
-//                startActivity(new Intent(this, SettingsActivity.class));
-//            }
             else if (id == R.id.nav_logout) {
                 SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                 prefs.edit().clear().apply();
@@ -180,7 +177,7 @@ public class GestionLigaActivity extends AppCompatActivity {
     }
 
     private void salirDeLiga(String ligaId, String userId) {
-        // Acceder al equipo del usuario (equipoUsuario)
+        // acceder al equipo del usuario (equipoUsuario)
         mDatabase.child("usuarios").child(userId).child("equipoUsuario")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -189,13 +186,13 @@ public class GestionLigaActivity extends AppCompatActivity {
                             for (DataSnapshot jugadorIdSnap : equipoSnapshot.getChildren()) {
                                 String jugadorId = jugadorIdSnap.getKey();
 
-                                // Cambiar estado del jugador a "disponible" y limpiar propietario
+                                // cambiar estado del jugador a "disponible" y limpiar propietario
                                 mDatabase.child("jugadores").child(jugadorId).child("estado").setValue("disponible");
                                 mDatabase.child("jugadores").child(jugadorId).child("propietarioNombre").removeValue();
                             }
                         }
 
-                        // Borrar datos del usuario relacionados con la liga
+                        // borrar datos del usuario relacionados con la liga
                         mDatabase.child("usuarios").child(userId).child("ligaId").removeValue().addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 mDatabase.child("usuarios").child(userId).child("puntos").removeValue();

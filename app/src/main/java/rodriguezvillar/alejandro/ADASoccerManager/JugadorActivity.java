@@ -14,11 +14,10 @@ public class JugadorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // NO usamos setContentView()
 
         db = FirebaseFirestore.getInstance();
 
-        // Leer jugadores
+        // leer jugadores
         leerJugadores();
     }
 

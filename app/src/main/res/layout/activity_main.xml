@@ -8,13 +8,10 @@
     android:backgroundTint="#77C448"
     tools:context=".MainActivity">
 
-    <!-- Contenedor principal de la pantalla -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:backgroundTint="#FCF5FD">
-
-        <!-- Toolbar (barra superior con del menú lateral (tres rayas)) -->
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -27,7 +24,6 @@
             app:navigationIcon="@drawable/menu_hamburguesa"
             app:title="@string/app_name" />
 
-        <!-- Texto de bienvenida -->
         <TextView
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
@@ -40,8 +36,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-        <!-- Botones -->
 
         <Button
             android:id="@+id/btnCreateLeague"
@@ -100,7 +94,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- NavigationView (menú lateral) -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"

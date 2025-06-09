@@ -34,7 +34,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
         this.listener = listener;
     }
 
-    // Mapa fijo: equipo → camiseta (todos los equipos tienen una)
+    // mapa fijo: equipo → camiseta (todos los equipos tienen una)
     private static final Map<String, Integer> camisetaPorEquipo = new HashMap<String, Integer>() {{
         put("Rayo Glacial", R.drawable.camiseta_azul);
         put("Trueno Rojo", R.drawable.camiseta_roja);
@@ -87,7 +87,7 @@ public class JugadorAdapter extends RecyclerView.Adapter<JugadorAdapter.JugadorV
             holder.imgCamiseta.setImageResource(camisetaRes);
         }
 
-        // Mostrar u ocultar botón según flag
+        // mostrar u ocultar botón según flag
         holder.btnComprar.setVisibility(mostrarBoton ? View.VISIBLE : View.GONE);
 
         if (mostrarBoton) {

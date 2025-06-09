@@ -276,7 +276,7 @@ public class MercadoActivity extends AppCompatActivity {
                     }
                 }
 
-                // VERIFICAR SI LA POSICIÓN ESTÁ COMPLETA
+                // verificar si la posicion esta completa
                 String posicionJugador = jugadorComprado.getPosicion();
                 if (posicionJugador != null) {
                     boolean posicionLlena =
@@ -291,7 +291,7 @@ public class MercadoActivity extends AppCompatActivity {
                     }
                 }
 
-                // CONTINÚA CON LA COMPRA
+                // continua con la compra
                 DatabaseReference jugadorRef = FirebaseDatabase.getInstance().getReference("jugadores").child(jugadorComprado.getId());
 
                 jugadorRef.runTransaction(new Transaction.Handler() {
@@ -318,14 +318,14 @@ public class MercadoActivity extends AppCompatActivity {
                             return;
                         }
 
-                        // Restar monedas
+                        // restar monedas
                         userRef.child("monedas").setValue(monedas - jugadorComprado.getPrecio());
 
-                        // Añadir jugador al equipo
+                        // añadir jugador al equipo
                         jugadorComprado.setEstado("en propiedad de " + nombreUsuario);
                         userRef.child("equipoUsuario").child(jugadorComprado.getId()).setValue(jugadorComprado);
 
-                        // Quitar del mercado
+                        // quitar del mercado
                         mercadoRef.child("jugadoresEnVenta").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {

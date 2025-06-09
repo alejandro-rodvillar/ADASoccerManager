@@ -7,7 +7,6 @@
     android:background="#78C649"
     tools:context=".MainActivity">
 
-    <!-- Contenedor principal para centrar los elementos -->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
@@ -31,7 +30,6 @@
             android:textColorHint="#3E4044"
             tools:text="Usuario o dirección de correo" />
 
-        <!-- Campo de texto para la contraseña -->
         <EditText
             android:id="@+id/etContrasena"
             android:layout_width="match_parent"

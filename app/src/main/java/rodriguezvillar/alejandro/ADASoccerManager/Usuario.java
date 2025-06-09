@@ -1,6 +1,5 @@
 package rodriguezvillar.alejandro.ADASoccerManager;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Usuario {

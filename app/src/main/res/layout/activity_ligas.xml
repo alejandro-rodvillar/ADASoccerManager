@@ -6,20 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- CONTENIDO PRINCIPAL -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Toolbar superior -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#77C448" />
 
-        <!-- CONTENIDO SCROLLABLE -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -32,7 +29,6 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp">
 
-                <!-- Texto si no pertenece a ninguna liga -->
                 <TextView
                     android:id="@+id/noLeagueTextView"
                     android:layout_width="match_parent"
@@ -43,7 +39,6 @@
                     android:padding="12dp"
                     android:visibility="gone" />
 
-                <!-- Botón para ir a MainActivity -->
                 <Button
                     android:id="@+id/joinOrCreateButton"
                     android:layout_width="wrap_content"
@@ -54,7 +49,6 @@
                     android:layout_gravity="center"
                     android:visibility="gone" />
 
-                <!-- Lista de jugadores en la liga -->
                 <ListView
                     android:id="@+id/leagueListView"
                     android:layout_width="match_parent"
@@ -68,7 +62,6 @@
             </LinearLayout>
         </ScrollView>
 
-        <!-- Menú inferior -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
@@ -78,7 +71,6 @@
             app:menu="@menu/bottom_nav_menu" />
     </LinearLayout>
 
-    <!-- Menú lateral -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"

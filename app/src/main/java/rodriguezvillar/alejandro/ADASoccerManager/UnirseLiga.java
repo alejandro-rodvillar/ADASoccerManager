@@ -35,7 +35,7 @@ public class UnirseLiga extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigation;
 
-    // Menú lateral
+    // menu lateral
     private DrawerLayout drawerLayout;
 
     @Override
@@ -48,7 +48,7 @@ public class UnirseLiga extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Configurar Toolbar y Navigation Drawer
+        // configurar Toolbar y Navigation Drawer
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawerLayout);
@@ -77,7 +77,7 @@ public class UnirseLiga extends AppCompatActivity {
             return true;
         });
 
-        // Inicializar BottomNavigationView
+        // inicializar BottomNavigationView
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
         bottomNavigation.setOnItemSelectedListener(item -> {
@@ -226,11 +226,11 @@ public class UnirseLiga extends AppCompatActivity {
                         for (DataSnapshot jugador : seleccionados) {
                             String jugadorId = jugador.getKey();
                             if (jugadorId != null) {
-                                // Actualizar estado con el nombre real del usuario
+                                // actualizar estado con el nombre real del usuario
                                 dbRef.child("jugadores").child(jugadorId).child("estado")
                                         .setValue("en propiedad de " + nombreUserFinal);
 
-                                // Añadir a la subcolección equipoUsuario con datos reales del jugador
+                                // añadir a la subcoleccion equipoUsuario con datos reales del jugador
                                 Jugador jugadorObj = jugador.getValue(Jugador.class);
                                 if (jugadorObj != null) {
                                     equipoUsuarioRef.child(jugadorId).setValue(jugadorObj);

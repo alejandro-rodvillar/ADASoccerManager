@@ -45,19 +45,19 @@ public class CrearLigaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crear_liga);
 
-        // Inicializa los campos de entrada de texto
+        // inicializar los campos de entrada de texto
         etLeagueName = findViewById(R.id.etLeagueName);
         etParticipants = findViewById(R.id.etParticipants);
 
-        // Obtiene el usuario actual
+        // obtener el usuario actual
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         dbRef = FirebaseDatabase.getInstance().getReference();
 
-        // Asocia el botón de crear liga con la función crearLiga()
+        // asociar el botón de crear liga con la función crearLiga()
         findViewById(R.id.btnSubmit).setOnClickListener(v -> crearLiga());
 
-        // Configura la barra superior y el menú lateral
+        // configurar la barra superior y el menú lateral
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -69,7 +69,7 @@ public class CrearLigaActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Acciones del menú lateral
+        // acciones del menú lateral
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_profile) {
@@ -90,7 +90,7 @@ public class CrearLigaActivity extends AppCompatActivity {
             return true;
         });
 
-        // Acciones del menú inferior
+        // acciones del menú inferior
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
@@ -110,19 +110,19 @@ public class CrearLigaActivity extends AppCompatActivity {
         });
     }
 
-    // Función principal para crear una liga
+    // funcion principal para crear una liga
     private void crearLiga() {
         String leagueName = etLeagueName.getText().toString().trim();
         String participantsStr = etParticipants.getText().toString().trim();
 
-        // Validación del nombre
+        // validacion del nombre
         if (leagueName.isEmpty()) {
             etLeagueName.setError("Ingresa el nombre de la liga");
             etLeagueName.requestFocus();
             return;
         }
 
-        // Validación del número de participantes
+        // validacion del numero de participantes
         if (participantsStr.isEmpty()) {
             etParticipants.setError("Ingresa el número de participantes");
             etParticipants.requestFocus();
@@ -151,7 +151,7 @@ public class CrearLigaActivity extends AppCompatActivity {
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("usuarios").child(uid);
         DatabaseReference ligasRefRoot = FirebaseDatabase.getInstance().getReference("ligas");
 
-        // Paso 1: comprobar si ya existe alguna liga
+        // comprobar si ya existe alguna liga
         ligasRefRoot.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot ligasSnapshot) {
@@ -160,7 +160,7 @@ public class CrearLigaActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Paso 2: comprobar si el usuario ya pertenece a una liga
+                // comprobar si el usuario ya pertenece a una liga
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot userSnapshot) {
@@ -270,11 +270,11 @@ public class CrearLigaActivity extends AppCompatActivity {
                         for (DataSnapshot jugador : seleccionados) {
                             String jugadorId = jugador.getKey();
                             if (jugadorId != null) {
-                                // Actualizar estado con el nombre real del usuario
+                                // actualizar estado con el nombre real del usuario
                                 dbRef.child("jugadores").child(jugadorId).child("estado")
                                         .setValue("en propiedad de " + nombreUserFinal);
 
-                                // Añadir a la subcolección equipoUsuario con datos reales del jugador
+                                // añadir a la subcolección equipoUsuario con datos reales del jugador
                                 Jugador jugadorObj = jugador.getValue(Jugador.class);
                                 if (jugadorObj != null) {
                                     equipoUsuarioRef.child(jugadorId).setValue(jugadorObj);

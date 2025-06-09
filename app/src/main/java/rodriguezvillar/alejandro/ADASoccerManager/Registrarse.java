@@ -90,10 +90,10 @@ public class Registrarse extends AppCompatActivity {
                         if (user != null) {
                             String uid = user.getUid();
 
-                            // Crear objeto Usuario
+                            // crear objeto Usuario
                             Usuario usuario = new Usuario(nombreUsuario, correo);
 
-                            // Guardar en Realtime Database en lugar de Firestore
+                            // guardar en Realtime Database en lugar de Firestore
                             mDatabase.child("usuarios").child(uid).setValue(usuario)
                                     .addOnSuccessListener(aVoid -> {
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
@@ -102,7 +102,7 @@ public class Registrarse extends AppCompatActivity {
                                         Toast.makeText(this, "Error al guardar datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     });
 
-                            // Enviar verificación por correo
+                            // enviar verificacion por correo
                             user.sendEmailVerification()
                                     .addOnCompleteListener(verificationTask -> {
                                         if (verificationTask.isSuccessful()) {
@@ -111,7 +111,7 @@ public class Registrarse extends AppCompatActivity {
                                             Toast.makeText(this, "No se pudo enviar el correo de verificación.", Toast.LENGTH_SHORT).show();
                                         }
 
-                                        // Redirigir a login
+                                        // redirigir a login
                                         Intent intent = new Intent(Registrarse.this, LoginActivity.class);
                                         startActivity(intent);
                                         finish();

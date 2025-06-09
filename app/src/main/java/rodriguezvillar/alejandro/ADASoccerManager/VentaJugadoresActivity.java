@@ -122,7 +122,7 @@ public class VentaJugadoresActivity extends AppCompatActivity {
                     }
                 }
 
-                // Ordenar por posición: portero, defensa, centrocampista, delantero
+                // ordenar por posición: portero, defensa, centrocampista, delantero
                 Collections.sort(listaJugadoresUsuario, new Comparator<Jugador>() {
                     @Override
                     public int compare(Jugador j1, Jugador j2) {
@@ -209,7 +209,7 @@ public class VentaJugadoresActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             refJugador.setValue("disponible").addOnCompleteListener(taskEstado -> {
                                 if (taskEstado.isSuccessful()) {
-                                    // Aquí actualizamos las monedas del usuario
+                                    // actualizar las monedas del usuario
                                     refMonedasUsuario.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -220,7 +220,7 @@ public class VentaJugadoresActivity extends AppCompatActivity {
                                                     monedasActuales = valor;
                                                 }
                                             }
-                                            long precioJugador = jugador.getPrecio(); // Asegúrate que getPrecio() devuelve long o int
+                                            long precioJugador = jugador.getPrecio();
                                             long monedasNuevas = monedasActuales + precioJugador;
 
                                             refMonedasUsuario.setValue(monedasNuevas).addOnCompleteListener(taskUpdate -> {

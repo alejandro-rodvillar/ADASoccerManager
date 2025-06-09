@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private static final String TAG = "FirebaseData";
 
-    // Comprobación de si el usuario pertenece a una liga
+    // comprobacion de si el usuario pertenece a una liga
     private void comprobarSiPerteneceALiga(Button btnManageLeague, Button btnJoinLeague) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -87,42 +86,42 @@ public class MainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-        // Botón crear liga
+        // boton crear liga
         findViewById(R.id.btnCreateLeague).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, CrearLigaActivity.class));
         });
 
-        // Botón gestionar liga
+        // boton gestionar liga
         Button btnManageLeague = findViewById(R.id.btnManageLeague);
         btnManageLeague.setVisibility(View.GONE);
         btnManageLeague.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, GestionLigaActivity.class));
         });
 
-        // Botón unirse a liga
+        // boton unirse a liga
         Button btnJoinLeague = findViewById(R.id.btnJoinLeague);
         btnJoinLeague.setVisibility(View.GONE);
         btnJoinLeague.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, UnirseLiga.class));
         });
 
-        // Mostrar botón correspondiente según estado del usuario
+        // mostrar botón correspondiente según estado del usuario
         comprobarSiPerteneceALiga(btnManageLeague, btnJoinLeague);
 
-        // Menú superior
+        // menu superior
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        // Toggle del menú lateral
+        // toggle del menu lateral
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
                 R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Acciones menú lateral
+        // acciones menú lateral
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_profile) {
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // Menú inferior
+        // menu inferior
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {

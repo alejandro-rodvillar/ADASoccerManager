@@ -21,10 +21,10 @@ public class TerminosCondicionesActivity extends AppCompatActivity {
         btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Aquí cambias TerminosCondicionesActivity.class por la actividad de registro
+                // aqui se cambia TerminosCondicionesActivity.class por la actividad de registro
                 Intent intent = new Intent(TerminosCondicionesActivity.this, Registrarse.class);
                 startActivity(intent);
-                finish(); // Opcional, para cerrar esta pantalla
+                finish(); // para cerrar esta pantalla
             }
         });
     }

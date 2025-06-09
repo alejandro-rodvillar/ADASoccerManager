@@ -60,7 +60,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         if (currentUser != null) {
             textViewCorreo.setText("Correo: " + currentUser.getEmail());
 
-            // Obtener nombre de usuario desde Firebase Realtime Database
+            // obtener nombre de usuario desde Firebase Realtime Database
             DatabaseReference usuarioRef = databaseReference.child("usuarios")
                     .child(currentUser.getUid())
                     .child("nombre");
@@ -87,7 +87,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             textViewNombreUsuario.setText("Nombre de usuario: no disponible");
         }
 
-        // Clave para almacenar nombre en SharedPreferences, por usuario
+        // clave para almacenar nombre en SharedPreferences, por usuario
         String keyNombreLocal = currentUser != null ? "nombreLocal_" + currentUser.getUid() : null;
 
         String nombreGuardadoLocal = "";
@@ -126,7 +126,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     sharedPreferences.edit().putString(keyNombreLocal, nombreNuevo).apply();
                 }
 
-                // Aquí NO se actualiza Firebase, solo se guarda localmente y se actualiza UI
+                // aqui NO se actualiza Firebase, solo se guarda localmente y se actualiza UI
 
                 textViewNombreGuardado.setText(nombreNuevo);
                 editTextNombre.setEnabled(false);
@@ -141,7 +141,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             }
         });
 
-        // Botón cambiar contraseña: enviar email restablecimiento
+        // boton cambiar contraseña: enviar email restablecimiento
         buttonCambiarContrasena.setOnClickListener(v -> {
             if (currentUser != null) {
                 String email = currentUser.getEmail();
