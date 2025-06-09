@@ -1,0 +1,1 @@
+En el directorio cloud_functions se encuentra una copia no funcional del JavaScript que se ha usado para configurar la base de datos con respecto a sus funciones de actualización de puntos periódica o la asignación de unos puntos por jornada y respectivos ingrersos de monedas en base a los puntos obtenidos.
